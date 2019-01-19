@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".EnglishGrammarActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/grammar_bg"
+        android:contentDescription="@null" />
+
+    <!--<ImageView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:alpha="0.2"-->
+        <!--android:scaleType="centerCrop" />-->
+
+    <LinearLayout
+        android:id="@+id/english_grammar_form"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+            >
+
+            <TextView
+                    android:gravity="center_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_english_grammar"
+                    android:textSize="36sp"
+                    android:fontFamily="@font/snap"
+                    android:textColor="#000000"
+                    android:freezesText="true"
+                />
+
+            <TextView
+                    android:gravity="center_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_english_grammar"
+                    android:textSize="35sp"
+                    android:fontFamily="@font/snap"
+                    android:textColor="#FF00FF"
+                    android:freezesText="true"
+                />
+
+
+        </RelativeLayout>
+
+        <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+        <!--android:background="@android:color/holo_orange_light"-->
+        <!--android:textColor="@android:color/holo_red_dark"-->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+                android:id="@+id/lblNameLevel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:freezesText="true"
+                android:text="Name_Level"
+                android:textColor="#2C3D3C"
+                android:textAlignment="textStart"
+                android:textSize="19sp"
+                android:textStyle="bold"
+                android:layout_marginStart="5dp"
+                android:layout_alignParentStart="true"
+            />
+
+        <Spinner
+                android:id="@+id/spinner_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:textColor="#2C3D3C"
+                android:textAlignment="center"
+                android:layout_marginEnd="5dp"
+            />
+    </RelativeLayout>
+
+        <!--android:background="@android:color/holo_orange_light"-->
+        <LinearLayout
+            android:id="@+id/score_level_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <!--android:textAppearance="?android:attr/textAppearanceMedium"-->
+            <!--android:textColor="@android:color/holo_red_dark"-->
+            <!--android:background="@android:color/holo_orange_light"-->
+
+            <TextView
+                    android:id="@+id/lblScore"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".50"
+                    android:freezesText="true"
+                    android:text="Score: 0"
+                    android:textAlignment="textStart"
+                    android:textColor="#2C3D3C"
+                    android:textStyle="bold"
+                    android:textSize="19sp"
+                    android:layout_marginStart="5dp"
+                />
+
+
+
+        </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp">
+
+            <TextView
+                        android:id="@+id/lblQuestion"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:freezesText="true"
+                        android:text="Question"
+                        android:layout_centerHorizontal="true"
+                        android:textAlignment="center"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="#2C3D3C"
+                />
+        </RelativeLayout>
+
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp"
+            >
+
+            <!--android:background="@android:color/holo_blue_light"-->
+            <!--style="?android:textAppearanceSmall"-->
+            <Button
+                    android:id="@+id/button_a"
+                    android:width="220dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/button_a"
+                    android:textAllCaps="false"
+                    android:background="@drawable/round_corner_5"
+                    android:textColor="#ffffff"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:layout_gravity="center_horizontal"
+                />
+
+            <Button
+                android:id="@+id/button_b"
+                android:width="220dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/button_b"
+                android:textAllCaps="false"
+                android:background="@drawable/round_corner_5"
+                android:textColor="#ffffff"
+                android:textSize="16sp"
+                android:layout_gravity="center_horizontal"
+                android:textStyle="bold" />
+
+            <Button
+                    android:id="@+id/button_c"
+                    android:width="220dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/button_c"
+                    android:textAllCaps="false"
+                    android:background="@drawable/round_corner_5"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                />
+
+            <Button
+                    android:id="@+id/button_d"
+                    android:width="220dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/button_d"
+                    android:textAllCaps="false"
+                    android:background="@drawable/round_corner_5"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                />
+
+        </LinearLayout>
+
+
+        <!--style="?android:textAppearanceSmall"-->
+        <!--android:background="@android:color/holo_blue_dark"-->
+        <Button
+            android:id="@+id/button_home"
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:background="@drawable/home_btn"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>

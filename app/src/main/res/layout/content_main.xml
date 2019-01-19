@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".MainActivity"
+    tools:showIn="@layout/activity_main">
+
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:background="@drawable/bg"
+            android:contentDescription="@null"
+        />
+
+    <ScrollView
+        android:id="@+id/content_main_form"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:id="@+id/content_form"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:orientation="vertical">
+
+
+
+            <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                >
+
+                <ToggleButton
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/soundStatus"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_music_icon"
+                    android:text="@null"
+                    android:checked="true"
+                    android:textOn="@null"
+                    android:textOff="@null"
+
+                    />
+
+                <TextView
+                        android:layout_marginTop="20dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/category"
+                        android:fontFamily="@font/snap"
+                        android:textSize="51sp"
+                        android:textColor="#FF0C35"
+                        android:layout_centerHorizontal="true"
+
+                />
+
+                <TextView
+                    android:layout_marginTop="20dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/category"
+                    android:fontFamily="@font/snap"
+                    android:textColor="#141312"
+                    android:textSize="50sp"
+                    android:layout_centerHorizontal="true"
+                    />
+
+            </RelativeLayout>
+
+
+            <TextView
+                android:id="@+id/lblStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:freezesText="true"
+                android:text="Welcome back, Smartie!"
+                android:textAlignment="center"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:textColor="#141312"
+                />
+
+
+            <!--android:background="@android:color/holo_blue_light"-->
+            <!--style="?android:textAppearanceSmall"-->
+            <!--android:text="@string/button_english_grammar"-->
+            <Button
+                android:id="@+id/button_english_grammar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/english_grammar"
+                android:textStyle="bold" />
+
+            <!--android:background="@android:color/holo_blue_light"-->
+            <!--style="?android:textAppearanceSmall"-->
+            <!--android:text="@string/button_spelling"-->
+            <Button
+                android:id="@+id/button_spelling"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/spelling"
+                android:textStyle="bold" />
+
+            <!--android:background="@android:color/holo_blue_light"-->
+            <!--android:text="@string/button_pronunciation"-->
+            <!--style="?android:textAppearanceSmall"-->
+            <Button
+                android:id="@+id/button_pronunciation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="@drawable/pronunciation"
+                android:textStyle="bold" />
+
+
+
+
+
+            <!--android:background="@android:color/holo_blue_dark"-->
+            <!--style="?android:textAppearanceSmall"-->
+
+            <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/round_corner_3"
+                    android:id="@+id/button_help"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/button_help"
+                    android:textColor="#141312"
+                    android:textStyle="bold"
+                    android:width="220dp"
+                />
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/round_corner_4"
+                    android:id="@+id/button_log_out"
+                    android:layout_gravity="center_horizontal"
+                    android:text="@string/button_log_out"
+                    android:textColor="#fff"
+                    android:textStyle="bold"
+                    android:width="220dp"
+                />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</android.support.constraint.ConstraintLayout>
+

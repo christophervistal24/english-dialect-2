@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    tools:context=".RegisterActivity">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/register_bg"
+        android:scaleType="fitXY"
+        android:contentDescription="@null" />
+
+    <LinearLayout
+        android:id="@+id/images"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/boy_img"
+            tools:ignore="ContentDescription"
+            android:layout_marginEnd="20dp"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/girl_img"
+            tools:ignore="ContentDescription"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_below="@+id/images"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
+
+        <TextView
+
+            android:id="@+id/lblStatus"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:freezesText="true"
+            android:text="Hey, Smartie!"
+            android:textAlignment="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="@android:color/holo_red_dark" />
+
+        <TextView
+            android:id="@+id/lblFirstName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_firstname" />
+
+        <EditText
+            android:id="@+id/txtFirstName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:labelFor="@id/txtFirstName"
+            android:background="@drawable/bordered_text_box"
+            android:padding="10dp"
+            tools:layout_editor_absoluteX="15dp"
+            tools:layout_editor_absoluteY="58dp" />
+
+        <TextView
+            android:id="@+id/lblLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_lastname" />
+
+        <EditText
+            android:id="@+id/txtLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:labelFor="@id/txtLastName"
+            android:background="@drawable/bordered_text_box"
+            android:padding="10dp"
+            android:maxLines="1"
+            android:singleLine="true" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/lblBirthday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:text="@string/label_birthday" />
+
+        <EditText
+            android:visibility="gone"
+            android:text="1"
+            android:background="@drawable/bordered_text_box"
+            android:id="@+id/txtBirthday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="date"
+            android:padding="10dp"
+            android:labelFor="@id/txtBirthday"
+            tools:layout_editor_absoluteX="15dp"
+            tools:layout_editor_absoluteY="199dp" />
+
+        <TextView
+            android:id="@+id/lblUserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_username"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="246dp" />
+
+        <EditText
+            android:id="@+id/txtUserName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:labelFor="@id/txtUserName"
+            android:background="@drawable/bordered_text_box"
+            android:padding="10dp"
+            android:maxLines="1"
+            android:singleLine="true" />
+
+        <TextView
+            android:id="@+id/lblPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_password"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="319dp" />
+
+        <EditText
+            android:id="@+id/txtPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:labelFor="@id/txtPassword"
+            android:background="@drawable/bordered_text_box"
+            android:padding="10dp"
+            tools:layout_editor_absoluteX="15dp"
+            tools:layout_editor_absoluteY="349dp" />
+
+        <TextView
+            android:id="@+id/lblConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/label_confirm_password"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="319dp" />
+
+        <EditText
+            android:id="@+id/txtConfirmPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:inputType="textPassword"
+            android:labelFor="@id/txtConfirmPassword"
+            android:background="@drawable/bordered_text_box"
+            android:padding="10dp"
+            tools:layout_editor_absoluteX="15dp"
+            tools:layout_editor_absoluteY="349dp" />
+
+        <Button
+            android:layout_marginTop="15dp"
+            android:id="@+id/btnRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_register"
+            android:background="@drawable/round_corner_3"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            tools:layout_editor_absoluteX="106dp"
+            tools:layout_editor_absoluteY="401dp" />
+
+        <Button
+            android:visibility="gone"
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/button_login"
+            android:background="@android:color/holo_blue_dark"
+            android:layout_marginTop="16dp"
+            tools:layout_editor_absoluteX="106dp"
+            tools:layout_editor_absoluteY="401dp" />
+
+    </LinearLayout>
+</RelativeLayout>
