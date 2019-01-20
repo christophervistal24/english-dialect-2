@@ -1,4 +1,4 @@
-package com.pointsph.edgame;
+package com.pointsph.edgame.Helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;

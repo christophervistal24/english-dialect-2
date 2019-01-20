@@ -40,6 +40,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.pointsph.edgame.Services.BackgroundMusic;
+import com.pointsph.edgame.SharedPref.SharedPreferenceHelper;
 import com.pointsph.edgame.Watcher.HomeWatcher;
 
 import java.io.BufferedReader;
@@ -275,6 +276,7 @@ public class LoginActivity extends AppCompatActivity {
                 intent.putExtra("grammarUserLevel", this.User.GrammarUserLevel);
                 intent.putExtra("pronunciationUserLevel", this.User.PronunciationUserLevel);
                 intent.putExtra("spellingUserLevel", this.User.SpellingUserLevel);
+
                 startActivity(intent);
                 finish();
             } else {
@@ -282,6 +284,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
+
 
     private boolean login() {
         boolean isLogin = false;
@@ -398,6 +401,7 @@ public class LoginActivity extends AppCompatActivity {
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
+
 
 }
 

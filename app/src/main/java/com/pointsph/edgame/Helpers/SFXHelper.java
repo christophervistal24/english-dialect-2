@@ -1,9 +1,9 @@
-package com.pointsph.edgame;
+package com.pointsph.edgame.Helpers;
 
 import android.content.Context;
 import android.media.MediaPlayer;
 
-class SFXHelper {
+public class SFXHelper {
 
     public static void playMusic(Context context, int music)
     {

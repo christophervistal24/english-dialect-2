@@ -7,13 +7,13 @@ import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
-import android.media.MediaPlayer;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.ArrayMap;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -23,6 +23,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.pointsph.edgame.Helpers.SFXHelper;
+import com.pointsph.edgame.Helpers.UserStatusHelper;
 import com.pointsph.edgame.Services.BackgroundMusic;
 import com.pointsph.edgame.SharedPref.SharedPreferenceHelper;
 import com.pointsph.edgame.Watcher.HomeWatcher;
@@ -380,11 +382,19 @@ public class EnglishGrammarActivity extends AppCompatActivity {
             // Add score.
             this.Score++;
             this.setScore();
+            //music for correct
             SFXHelper.playMusic(getApplicationContext(),R.raw.correct);
+            //track and set correct answer
+            UserStatusHelper
+                    .setEnglishGrammarCorrect(getApplicationContext(),User.Username);
         }  else {
             msg = "Sorry, that is incorrect. The correct answer is " + answer + ".";
             this.WrongAnswers++;
+            //music for wrong
             SFXHelper.playMusic(getApplicationContext(),R.raw.wrong);
+            //track and set wrong answer
+            UserStatusHelper
+                    .setEnglishGrammarWrong(getApplicationContext(),User.Username);
         }
         // Determine level up.
         if (this.isLevelUp()) {

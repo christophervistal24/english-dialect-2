@@ -11,6 +11,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.ArrayMap;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -18,6 +19,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.pointsph.edgame.Helpers.SFXHelper;
+import com.pointsph.edgame.Helpers.UserStatusHelper;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -300,11 +304,15 @@ public class SpellingActivity extends AppCompatActivity {
             this.setScore();
             //music for correct answer
             SFXHelper.playMusic(getApplicationContext(),R.raw.correct);
+            //track and set correct answer
+            UserStatusHelper.setSpellingCorrect(getApplicationContext(),User.Username);
         }  else {
             msg = "Sorry, that is incorrect. The correct answer is " + correctAnswer + ".";
             this.WrongAnswers++;
             //music for wrong answer
             SFXHelper.playMusic(getApplicationContext(),R.raw.wrong);
+            //track and set wrong answer
+            UserStatusHelper.setSpellingWrong(getApplicationContext(),User.Username);
         }
 
         // Determine level up.
