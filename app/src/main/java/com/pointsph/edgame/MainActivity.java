@@ -117,6 +117,9 @@ public class MainActivity extends AppCompatActivity {
             if (mServ != null) {
                 mServ.resumeMusic();
             }
+            soundStatus.setBackgroundResource(R.drawable.bg_music_icon);
+        } else {
+            soundStatus.setBackgroundResource(R.drawable.bg_music_icon_off);
         }
 
         super.onResume();
