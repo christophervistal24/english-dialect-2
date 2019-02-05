@@ -34,7 +34,7 @@
     <string name="button_b">B</string>
     <string name="button_c">C</string>
     <string name="button_d">D</string>
-    <string name="button_help">Help</string>
+    <string name="button_about">About</string>
     <string name="button_log_out">Log out</string>
     <string name="button_previous">Previous</string>
     <string name="button_play">Play</string>
@@ -45,4 +45,12 @@
     <string name="start">TAP TO START</string>
     <string name="category">Category</string>
     <string name="sound">SOUND :</string>
+    <string name="stages_done">ALL STAGES DONE!</string>
+    <string name="reymon_magsayo">Reymon F. Magsayo</string>
+    <string name="margie_callote">Margie T. Callote</string>
+    <string name="jazthine_calamba">Jazthine A. Calamba</string>
+    <string name="eddie_cenita">Eddie S. Cenita Jr.</string>
+    <string name="judy_dellote">Judy Ann O. Dellote</string>
+    <string name="about">The researchers developed an English Dialect Game that helps and develop the learning of Elementary Students in Grammar, SPelling and Pronunciation through technological way.</string>
+    <string name="about_version">Version of Application 1.0 Android Compatibility 5.1.1 (Lollipop or Higher Version)</string>
 </resources>

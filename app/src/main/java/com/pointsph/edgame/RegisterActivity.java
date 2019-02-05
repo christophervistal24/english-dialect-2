@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.pointsph.edgame.Helpers.UserLoginHelper;
 import com.pointsph.edgame.Services.BackgroundMusic;
 import com.pointsph.edgame.Watcher.HomeWatcher;
 
@@ -181,22 +182,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         this.FileHelper = new FileHelper(this);
 
-        this.bRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MediaPlayer sfx = MediaPlayer.create(getApplicationContext(), R.raw.click_sfx);
-                sfx.start();
-                attemptRegister();
-            }
+        this.bRegister.setOnClickListener(view -> {
+            MediaPlayer sfx = MediaPlayer.create(getApplicationContext(), R.raw.click_sfx);
+            sfx.start();
+            attemptRegister();
         });
 
-        this.bLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        this.bLogin.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            startActivity(intent);
+            finish();
         });
     }
 
@@ -238,10 +233,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             Message.show("Passwords must not be less than 6 characters.", Context);
             return;
         }
-        if (!ePassword.getText().toString().toUpperCase().equals(eConfirmPassword.getText().toString().toUpperCase())) {
-            Message.show("Passwords do not match. Please try again.", Context);
-            return;
-        }
+
+        //remove the validation for password confirmation
+//        if (!ePassword.getText().toString().toUpperCase().equals(eConfirmPassword.getText().toString().toUpperCase())) {
+//            Message.show("Passwords do not match. Please try again.", Context);
+//            return;
+//        }
 
         updateButtonState(this.bRegister,false);
         updateButtonState(this.bLogin,false);
@@ -252,7 +249,18 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 //                this.setStatusMessage(stringBuilder.toString());
 //                this.setReady();
 
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+//                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent.putExtra("firstName", this.FirstName);
+                intent.putExtra("lastName", this.LastName);
+                intent.putExtra("birthday", this.Birthday);
+                intent.putExtra("username", this.UserName);
+                intent.putExtra("grammarUserLevel", this.GrammarUserLevel);
+                intent.putExtra("pronunciationUserLevel", this.PronunciationUserLevel);
+                intent.putExtra("spellingUserLevel", this.SpellingUserLevel);
+                //save the last logined user this method is added by vistal
+                UserLoginHelper.rememberThisUser(this,this.UserName);
                 startActivity(intent);
                 finish();
             } else {

@@ -1,9 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".HelpActivity">
+    tools:context=".HelpActivity"
+    android:background="#ffffff">
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        >
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/about"
+            android:textAlignment="center"
+            android:textColor="#569bf5"
+            android:textStyle="bold"
+            android:padding="10dp"
+            android:textSize="21sp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/about_version"
+            android:textAlignment="center"
+            android:textColor="#569bf5"
+            android:textStyle="bold"
+            android:padding="10dp"
+            android:textSize="21sp"
+            android:layout_marginBottom="20dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textColor="#569bf5"
+            android:textStyle="bold"
+            android:textSize="28sp"
+            android:layout_marginBottom="20dp"
+            android:text="Researchers"/>
+
+        <ImageView
+            android:id="@+id/rey"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/rey"
+            android:contentDescription="@null"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/reymon_magsayo"
+                android:textAlignment="center"
+                android:textColor="#569bf5"
+                android:textStyle="bold"
+                android:textSize="21sp"
+                android:layout_marginBottom="20dp"
+            />
+
+        <ImageView
+            android:id="@+id/margie"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/marg"
+            android:contentDescription="@null"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/margie_callote"
+            android:textAlignment="center"
+            android:textColor="#569bf5"
+            android:textStyle="bold"
+            android:textSize="21sp"
+            android:layout_marginBottom="20dp"
+            />
+
+
+        <ImageView
+            android:id="@+id/eddie"
+            android:layout_width="176dp"
+            android:layout_height="176dp"
+            android:src="@drawable/ed"
+            android:contentDescription="@null"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:text="@string/eddie_cenita"
+            android:textAlignment="center"
+            android:textColor="#569bf5"
+            android:textSize="21sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/jaz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/jaz"
+            android:contentDescription="@null"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/jazthine_calamba"
+                android:textAlignment="center"
+                android:textColor="#569bf5"
+                android:textStyle="bold"
+                android:textSize="21sp"
+            android:layout_marginBottom="20dp"
+            />
+
+        <ImageView
+            android:id="@+id/juday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/juday"
+            android:contentDescription="@null"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/judy_dellote"
+                android:textAlignment="center"
+                android:textColor="#569bf5"
+                android:textStyle="bold"
+                android:textSize="21sp"
+            android:layout_marginBottom="20dp"
+            />
+
+
+    </LinearLayout>
+
+
+
+
+</ScrollView>

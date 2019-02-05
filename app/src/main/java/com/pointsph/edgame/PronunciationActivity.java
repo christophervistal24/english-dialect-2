@@ -4,24 +4,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.pointsph.edgame.Helpers.ConfettiHelper;
+import com.pointsph.edgame.Helpers.GameOverHelper;
+import com.pointsph.edgame.Helpers.RandomHelper;
 import com.pointsph.edgame.Helpers.SFXHelper;
+import com.pointsph.edgame.Helpers.UserLevelHelper;
+import com.pointsph.edgame.Helpers.UserScoreHelper;
 import com.pointsph.edgame.Helpers.UserStatusHelper;
+import com.pointsph.edgame.Watcher.HomeWatcher;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -34,8 +43,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Random;
+
+import nl.dionsegijn.konfetti.models.Shape;
+import nl.dionsegijn.konfetti.models.Size;
 
 public class PronunciationActivity extends AppCompatActivity {
 
@@ -50,13 +63,14 @@ public class PronunciationActivity extends AppCompatActivity {
     // UI References
     private TextView tNameLevel;
     private TextView tScore;
+    private TextView tLevel;
     private ListView lAudio;
     private Spinner sMode;
     private Button bPlay;
     private Button bChoiceA;
     private Button bChoiceB;
     private Button bHome;
-    private ConstraintLayout mainContainer;
+    private FrameLayout mainContainer;
 
     private ArrayList<String> AudioFiles;
     private String CurrentPronunciationFolder = "";
@@ -64,6 +78,14 @@ public class PronunciationActivity extends AppCompatActivity {
     private Integer AudioFilesCount = 0;
     private Integer Score = 0;
     private Integer WrongAnswers = 0;
+    private static int currentLevel = 0;
+
+    private boolean isFinish = false;
+    private boolean isBackward = true;
+
+    HomeWatcher mHomeWatcher;
+
+    private nl.dionsegijn.konfetti.KonfettiView viewKonfetti;
 
 
     @Override
@@ -71,13 +93,20 @@ public class PronunciationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pronunciation);
 
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         this.FileHelper = new FileHelper(this);
         this.User = new User();
         this.Context = this;
         this.AudioFiles = new ArrayList<>();
 
+
+
+
         this.tNameLevel = findViewById(R.id.lblNameLevel);
         //this.lAudio = findViewById(R.id.audio_list);
+        this.tLevel = findViewById(R.id.level);
         this.tScore = findViewById(R.id.lblScore);
         this.sMode = findViewById(R.id.spinner_mode);
         this.bPlay = findViewById(R.id.button_play);
@@ -85,6 +114,23 @@ public class PronunciationActivity extends AppCompatActivity {
         this.bChoiceB = findViewById(R.id.button_b);
         this.bHome = findViewById(R.id.button_home);
         this.mainContainer = findViewById(R.id.main_container);
+        this.viewKonfetti = findViewById(R.id.viewKonfetti);
+
+        //listener if the user press the home button
+        mHomeWatcher = new HomeWatcher(Context);
+        mHomeWatcher.setOnHomePressedListener(new HomeWatcher.OnHomePressedListener() {
+            @Override
+            public void onHomePressed() {
+                isUserPressHomeButton();
+            }
+            @Override
+            public void onHomeLongPressed() {
+                isUserPressHomeButton();
+            }
+        });
+        mHomeWatcher.startWatch();
+
+
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -103,24 +149,20 @@ public class PronunciationActivity extends AppCompatActivity {
 
         // Default the pronunciation folder to the beginner folder.
         this.CurrentPronunciationFolder = this.FileHelper.PronunciationBeginnerFolder;
-        this.setNameLevel(this.User.PronunciationUserLevel);
         this.initLevels();
+        this.setNameLevel(this.User.PronunciationUserLevel);
+
         // Sets the level selection.
         this.setLevelSelection(this.User.PronunciationUserLevel);
 
-        /*try {
-            this.initBackgroundImage();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }*/
+        // Set current level for a user in UI
+        this.displaySetLevel();
 
         // Sets an event listener for the home button.
-        this.bHome.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                initMain();
-            }
-        });
+        this.bHome.setOnClickListener(view -> initMain());
+
+        //when first open we need to set the level of the user
+        UserScoreHelper.setLevel(Integer.parseInt(User.getPronunciationUserLevel()));
 
         this.sMode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -137,25 +179,36 @@ public class PronunciationActivity extends AppCompatActivity {
 
                 if (level.equals(Advance)) {
                     if (User.PronunciationUserLevel.equals("1") || User.PronunciationUserLevel.equals("2")) {
-                        Message.show("Level not yet reached.", Context);
+                        Message.show("Level not yet reached. you need to answer " + (int) Math.ceil(((AudioFiles.size()+1) * .50) - Score) + " questions" +
+                                " " +
+                                "before you can jump to advance", Context);
+                        isBackward = false;
                         sMode.setSelection(position - 1);
                         CurrentPronunciationFolder = FileHelper.PronunciationBeginnerFolder;
                     } else {
+                        isBackward = true;
                         CurrentPronunciationFolder = FileHelper.PronunciationAdvanceFolder;
                     }
                 }
 
                 if (level.equals(Expert)) {
                     if (User.PronunciationUserLevel.equals("1") || User.PronunciationUserLevel.equals("2")) {
-                        Message.show("Level not yet reached.", Context);
+                        Message.show("Level not yet reached. you need to answer " + (int) Math.ceil(((AudioFiles.size()+1) * .50) - Score)  + "" +
+                                " questions to proceed in advance then answer " + (int) Math.ceil((AudioFiles.size()+1) * 0.9) + " questions" +
+                                " so you can jump to expert", Context);
+                        isBackward = false;
                         sMode.setSelection(position - 2);
                         CurrentPronunciationFolder = FileHelper.PronunciationBeginnerFolder;
                     } else if (User.PronunciationUserLevel.equals("3") || User.PronunciationUserLevel.equals("4")) {
-                        Message.show("Level not yet reached.", Context);
+                        Message.show("Level not yet reached. you need to answer " + (int) Math.ceil(((AudioFiles.size()+1) * 0.9) - Score) + " questions" +
+                                " " +
+                                "before you can jump to expert", Context);
+                        isBackward = false;
                         sMode.setSelection(position - 1);
                         CurrentPronunciationFolder = FileHelper.PronunciationAdvanceFolder;
                     } else {
                         CurrentPronunciationFolder = FileHelper.PronunciationExpertFolder;
+                        isBackward = true;
                     }
                 }
 
@@ -163,14 +216,67 @@ public class PronunciationActivity extends AppCompatActivity {
                 showQuestion();
                 Score = 0;
                 setScore();
+
+                //get the user choose
+                //compare to it's current level
+                boolean itIsEqualToCurrentLevel = level.equals(UserScoreHelper.convertLevelToWord(Integer.parseInt(User.getPronunciationUserLevel())));
+                //if the not equal to current level perform the action
+                if  (!itIsEqualToCurrentLevel && isBackward) {
+                    //set UserScoreHelper level to = what the user choose
+                    UserScoreHelper.setLevel(UserScoreHelper.convertWordToLevel(level));
+                    //rebase the user score on that particular level
+                    UserScoreHelper.setCurrentScoreInPronunciation(Context,UserScoreHelper.getLevel(),User.Username,0);
+                    setScore();
+                    initAudioFiles();
+                    showQuestion();
+                } else {
+                    UserScoreHelper.setLevel(Integer.parseInt(User.getPronunciationUserLevel()));
+                    setScore();
+                    initAudioFiles();
+                    showQuestion();
+                }
+
+
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
                 // sometimes you need nothing here
             }
+
         });
+
+
+        //at the first the score of user is 0 so we need to call setScore
+        //to resume the previous score of the user
+        this.setScore();
+
+        //give information to the user about question that needs to answer to acquired level up
+        giveMessageDependingOnLevel();
+        //checking if the user finish all the stages
+        isUserFinishAllStages();
+
+
+
+    }
+
+    /**
+     * Checking if the user press the home button of his/her phone on pronunciation
+     */
+    private void isUserPressHomeButton() {
+       if (Context instanceof PronunciationActivity) {
+           GameOverHelper.rebaseUserMistakes(getApplicationContext());
+           UserScoreHelper.rebaseUserScore(getApplicationContext());
+           ConfettiHelper.rebaseGrammarFinishConffeti(getApplicationContext());
+           ConfettiHelper.rebaseSpellingFinishConfetti(getApplicationContext());
+           ConfettiHelper.rebasePronunFinishConfetti(getApplicationContext());
+       }
+    }
+
+    @Override
+    protected void onResume() {
+        this.setScore();
+        super.onResume();
     }
 
     @Override
@@ -179,11 +285,52 @@ public class PronunciationActivity extends AppCompatActivity {
         return;
     }
 
+    //display information according to user level
+    private void giveMessageDependingOnLevel() {
+        //get the pronunciation to easily calculate the no of questions that the user need to answer
+        this.setScore(); //update the user score
+        CurrentPronunciationFolder = "Pronunciation/".concat(UserScoreHelper.getLevel());
+        initAudioFiles();
+
+
+        //check level of the user and give appropriate message
+        if (User.getPronunciationUserLevel().equals("1") || User.getPronunciationUserLevel().equals("2")) {
+            Message.show("You are in Beginner, you need to answer " + (int) Math.ceil(((this.AudioFiles.size() + 1) * .50) -  Score) + " questions" +
+                    " " +
+                    "before you can jump to advance", Context);
+        } else if (User.getPronunciationUserLevel().equals("3") || User.getPronunciationUserLevel().equals("4")) {
+            Message.show("You are in Advance, you need to answer " + (int) Math.ceil(((this.AudioFiles.size() + 1) * 0.9) - Score) + "" +
+                    " questions so you can jump to expert", Context);
+        } else if (User.getPronunciationUserLevel().equals("5") && this.Score < this.AudioFiles.size()) {
+            Message.show("You are in Expert,  you need to answer " + (int) Math.ceil(((this.AudioFiles.size())) - Score) + " questions" +
+                    " " +
+                    "to finish this level", Context);
+        }
+    }
+
+    private void isUserFinishAllStages() {
+        initAudioFiles();
+        showQuestion();
+
+        isFinish = this.checkIsUserDoneAllStage(
+                this.Score,
+                Integer.parseInt(this.User.getPronunciationUserLevel()),
+                this.AudioFilesCount
+        );
+
+
+        // is expert level finish
+        if (isFinish) {
+            tLevel.setText(R.string.stages_done);
+            if (!ConfettiHelper.isConfettiInPronunciationAlreadyDisplay(this,User.Username)) {
+                this.generateConfetti();
+                SFXHelper.playMusic(getApplicationContext(),R.raw.level_up);
+            }
+        }
+    }
+
     public void initMain() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.putExtra("firstName", User.FirstName);
-        intent.putExtra("lastName", User.LastName);
-        intent.putExtra("birthday", User.Birthday);
         intent.putExtra("username", User.Username);
         intent.putExtra("grammarUserLevel", User.GrammarUserLevel);
         intent.putExtra("pronunciationUserLevel", User.PronunciationUserLevel);
@@ -210,9 +357,6 @@ public class PronunciationActivity extends AppCompatActivity {
     // Redirects to the main.
     private void redirectToMain() {
         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-        intent.putExtra("firstName", User.FirstName);
-        intent.putExtra("lastName", User.LastName);
-        intent.putExtra("birthday", User.Birthday);
         intent.putExtra("username", User.Username);
         intent.putExtra("userLevel", User.PronunciationUserLevel);
         startActivity(intent);
@@ -253,19 +397,11 @@ public class PronunciationActivity extends AppCompatActivity {
         try {
             mPlayer.setDataSource(this, Uri.parse(filename));
             mPlayer.prepare();
-            mPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                @Override
-                public void onPrepared(final MediaPlayer mp) {
-                    mp.start();
-                }
-            });
-            mPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                @Override
-                public void onCompletion(final MediaPlayer mp) {
-                    mp.stop();
-                    mp.reset();
-                    mp.release();
-                }
+            mPlayer.setOnPreparedListener(MediaPlayer::start);
+            mPlayer.setOnCompletionListener(mp -> {
+                mp.stop();
+                mp.reset();
+                mp.release();
             });
         } catch (Exception e) {
             this.showMessage(Message.ERROR_OCCURRED);
@@ -296,10 +432,10 @@ public class PronunciationActivity extends AppCompatActivity {
         // Check if questions object is not empty.
         if (!this.AudioFiles.isEmpty()) {
             this.AudioFilesCount = this.AudioFiles.size();
-            Random rnd = new Random();
+//            Random rnd = new Random();
             // Generate a random integer between 0 and the length of the audio files.
             // The result will be used as the id of the item.
-            int id = rnd.nextInt(this.AudioFilesCount);
+            int id = RandomHelper.generateRandomNumber(this.AudioFilesCount);
             // Get a single audio based on the unique id.
             final String audio = this.AudioFiles.get(id);
             // Split the filename of the audio.
@@ -321,25 +457,14 @@ public class PronunciationActivity extends AppCompatActivity {
             }
 
             // Add event listeners to the buttons.
-            this.bPlay.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    playAudio(audio);
-                }
+            this.bPlay.setOnClickListener(view -> playAudio(audio));
+            this.bChoiceA.setOnClickListener(view -> {
+                String text = bChoiceA.getText().toString().trim();
+                checkAnswer(text, correctAnswer);
             });
-            this.bChoiceA.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String text = bChoiceA.getText().toString().trim();
-                    checkAnswer(text, correctAnswer);
-                }
-            });
-            this.bChoiceB.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String text = bChoiceB.getText().toString().trim();
-                    checkAnswer(text, correctAnswer);
-                }
+            this.bChoiceB.setOnClickListener(view -> {
+                String text = bChoiceB.getText().toString().trim();
+                checkAnswer(text, correctAnswer);
             });
             // Add event listeners to the buttons.
         } else {
@@ -352,23 +477,39 @@ public class PronunciationActivity extends AppCompatActivity {
         String msg;
         boolean isShowLevelUpMsg = false;
         boolean isCorrect = choice.trim().toUpperCase().equals(answer.trim().toUpperCase());
+
+        this.setScore(); //update the user score
+
         if (isCorrect) {
             msg = "Very good, that is correct!";
             // Add score.
             this.Score++;
-            this.setScore();
             //music for correct answer
             SFXHelper.playMusic(getApplicationContext(),R.raw.correct);
-            //track and set correct answer
-            UserStatusHelper.setPronunciationCorrect(getApplicationContext(),User.Username);
+            //track and set correct answer depending on level
+            UserScoreHelper.addCurrentScoreInPronunciation(this,UserScoreHelper.getLevel(),User.Username);
+            this.setScore();
         }  else {
             msg = "Sorry, that is incorrect. The correct answer is " + answer + ".";
             this.WrongAnswers++;
             //music for wrong answer
             SFXHelper.playMusic(getApplicationContext(),R.raw.wrong);
-            //track and set wrong answer
-            UserStatusHelper.setPronunciationWrong(getApplicationContext(),User.Username);
+
+            //TODO uncomment this after development mode
+            //add mistake to user
+            //GameOverHelper.addMistake(this,User.Username,User.getPronunciationUserLevel());
         }
+
+        //checking if the user is game over or not
+        if (GameOverHelper.isUserGameOver(this,User.Username,User.getPronunciationUserLevel())) {
+            int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.getPronunciationUserLevel());
+            Toast.makeText(this, "Game over no. of mistake : " + String.valueOf(noOfMistakes), Toast.LENGTH_SHORT).show();
+            //rebase the mistakes count of the user
+            GameOverHelper.rebaseUserMistakes(this);
+            //rebase the current score of the user in shared pref
+            UserScoreHelper.rebaseUserScore(this);
+        }
+
 
         // Determine level up.
         if (this.isLevelUp()) {
@@ -381,16 +522,59 @@ public class PronunciationActivity extends AppCompatActivity {
             this.setLevelSelection(this.User.PronunciationUserLevel);
        }
 
+        //to avoid double level up I add this condition
         if (isShowLevelUpMsg) {
-            //music for user level up
-            SFXHelper.playMusic(getApplicationContext(),R.raw.level_up);
-            Message.show("Congratulations! Level-up acquired!", this.Context);
-        }
+            //we also need to set a new level for user while answering some questions
+            UserScoreHelper.setLevel(Integer.parseInt(User.getPronunciationUserLevel()));
 
+            switch(currentLevel) {
+
+                case 2:
+                    this.giveMessageDependingOnLevel();
+                    RandomHelper.rebaseListNumber();
+                    SFXHelper.playMusic(getApplicationContext(),R.raw.level_up);
+                    break;
+
+                case 4:
+                    this.giveMessageDependingOnLevel();
+                    RandomHelper.rebaseListNumber();
+                    SFXHelper.playMusic(getApplicationContext(),R.raw.level_up);
+                    break;
+
+                case 5:
+                    this.giveMessageDependingOnLevel();
+                    RandomHelper.rebaseListNumber();
+                    SFXHelper.playMusic(getApplicationContext(),R.raw.level_up);
+                    break;
+            }
+
+        }
+        //rebase the current score of the user since promoted to next level
+        this.setScore();
         Message.show(msg, this.Context);
+
+
+        // Set current level for a user in UI
+        this.displaySetLevel();
+        this.isUserFinishAllStages();
+
 
         // Show another question.
         this.showQuestion();
+    }
+
+    private void generateConfetti() {
+        viewKonfetti.build()
+                .addColors(Color.parseColor("#ffff00"), Color.parseColor("#0000FF"),Color.parseColor("#ff0000"))
+                .setDirection(50, 359.0)
+                .setSpeed(1f, 5f)
+                .setFadeOutEnabled(true)
+                .setTimeToLive(2000L)
+                .addShapes(Shape.CIRCLE)
+                .addSizes(new Size(13, 5f))
+                .setPosition(-50f, viewKonfetti.getWidth() + 50f, -50f, -50f)
+                .streamFor(300, 5000L);
+                ConfettiHelper.setPronunciationAlreadyDisplayed(this,User.Username);
     }
 
     // Determines if the user if for level up.
@@ -399,12 +583,11 @@ public class PronunciationActivity extends AppCompatActivity {
         int userLevel = Integer.parseInt(this.User.getPronunciationUserLevel());
         int selectedLevel = this.sMode.getSelectedItemPosition();
         String selectedLevelName = this.sMode.getItemAtPosition(selectedLevel).toString();
-
+        currentLevel = userLevel;
         String userLevelName = "";
         if (userLevel <= 2) userLevelName = this.Beginner;
         if (userLevel == 3 || userLevel == 4) userLevelName = this.Advance;
         if (userLevel == 5) userLevelName = this.Expert;
-
         // The level of the user must be equal to the selected level in order to level up the user.
         if (selectedLevelName.trim().toUpperCase().equals(userLevelName.trim().toUpperCase())) {
             //int actualScore = this.Score - this.WrongAnswers;
@@ -442,7 +625,14 @@ public class PronunciationActivity extends AppCompatActivity {
     // Sets the score.
     private void setScore() {
         if (this.Score <= this.AudioFilesCount)
-            this.tScore.setText(String.format("Score: %s / %s", this.Score.toString(), this.AudioFilesCount.toString()));
+            //checking if the user has a previous score in session
+            if (UserScoreHelper.isUserHasPreviousScoreInPronunciation(this,UserScoreHelper.getLevel(),User.Username)) {
+                this.Score = UserScoreHelper.getCurrentScoreInPronunciation(this,UserScoreHelper.getLevel(),User.Username);
+            } else { // rebase the score to 0
+                this.Score = 0;
+            }
+//          this.tScore.setText(String.format("Score: %s / %s", this.Score.toString(), this.QuestionsCount.toString()));
+        this.tScore.setText(String.format("Score: %s", this.Score.toString()));
     }
 
     // Sets the name and the level of the user.
@@ -451,7 +641,7 @@ public class PronunciationActivity extends AppCompatActivity {
         if (Integer.parseInt(userLevel) <= 2) level = this.Beginner;
         if (Integer.parseInt(userLevel) == 3 || Integer.parseInt(userLevel) == 4) level = this.Advance;
         if (Integer.parseInt(userLevel) == 5) level = this.Expert;
-        this.tNameLevel.setText(String.format("%s: %s", this.User.FirstName, level));
+        this.tNameLevel.setText(String.format("%s: %s", this.User.Username, level));
     }
 
     // Level up the user.
@@ -607,5 +797,16 @@ public class PronunciationActivity extends AppCompatActivity {
         }
 
         return picturePath;
+    }
+
+    private void displaySetLevel() {
+
+        int currentUserLevel = UserLevelHelper
+                .currentLevelOfUser(Integer.parseInt(this.User.getPronunciationUserLevel()));
+        tLevel.setText(String.format(Locale.getDefault(),"Level : %d",currentUserLevel));
+    }
+
+    private boolean checkIsUserDoneAllStage(int currentScore , int currentLevel , int noOfQuestions) {
+        return currentScore >= noOfQuestions && currentLevel == 5;
     }
 }

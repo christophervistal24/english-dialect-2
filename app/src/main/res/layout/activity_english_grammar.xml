@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_container"
@@ -42,6 +42,20 @@
                     android:fontFamily="@font/snap"
                     android:textColor="#000000"
                     android:freezesText="true"
+                />
+
+            <ToggleButton
+                    android:layout_alignParentEnd="true"
+                    android:id="@+id/soundStatus"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:background="@drawable/bg_music_icon"
+                    android:text="@null"
+                    android:checked="true"
+                    android:textOn="@null"
+                    android:textOff="@null"
+                    android:layout_centerVertical="true"
                 />
 
             <TextView
@@ -119,6 +133,60 @@
 
 
         </LinearLayout>
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/level"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Level : "
+                android:layout_weight=".50"
+                android:freezesText="true"
+                android:textColor="#2C3D3C"
+                android:textStyle="bold"
+                android:textSize="19sp"
+                android:layout_gravity="center_horizontal"
+            />
+
+
+                <TextView
+                    android:visibility="gone"
+                        android:id="@+id/correctAnswers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Correct : "
+                        android:layout_weight=".50"
+                        android:freezesText="true"
+                        android:textAlignment="textStart"
+                        android:textColor="#2C3D3C"
+                        android:textStyle="bold"
+                        android:textSize="19sp"
+                        android:layout_marginStart="5dp"
+                    />
+
+                <TextView
+                    android:visibility="gone"
+                        android:id="@+id/wrongAnswers"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Wrong : "
+                        android:layout_weight=".50"
+                        android:freezesText="true"
+                        android:textAlignment="textStart"
+                        android:textColor="#2C3D3C"
+                        android:textStyle="bold"
+                        android:textSize="19sp"
+                        android:layout_marginStart="5dp"
+                    />
+
+
+        </LinearLayout>
+
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -223,4 +291,10 @@
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+    <nl.dionsegijn.konfetti.KonfettiView
+        android:id="@+id/viewKonfetti"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+</FrameLayout>

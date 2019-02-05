@@ -12,14 +12,21 @@ public class Message {
 
     public static void show(String msg, Context context) {
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
-        alertDialog.setMessage(msg);
-        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                return ;
-            }
-        });
-        alertDialog.create();
-        alertDialog.show();
+        alertDialog.setMessage(msg)
+                   .setCancelable(false)
+                   .setPositiveButton("OK", (dialogInterface, i) -> {})
+                   .create()
+                   .show();
+
+//        alertDialog.setMessage(msg);
+//        alertDialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//            public void onClick(DialogInterface dialog, int whichButton) {
+//                return ;
+//            }
+//        });
+//        alertDialog.setCancelable(false);
+//        alertDialog.create();
+//        alertDialog.show();
     }
 
 }

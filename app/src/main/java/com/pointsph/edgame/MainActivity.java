@@ -1,10 +1,9 @@
 package com.pointsph.edgame;
 
+import android.app.AlertDialog;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,37 +14,32 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.provider.MediaStore;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.ArrayMap;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.LinearLayout;
-import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.pointsph.edgame.Helpers.ConfettiHelper;
+import com.pointsph.edgame.Helpers.GameOverHelper;
+import com.pointsph.edgame.Helpers.UserInstructionHelper;
+import com.pointsph.edgame.Helpers.UserLoginHelper;
+import com.pointsph.edgame.Helpers.UserScoreHelper;
 import com.pointsph.edgame.Services.BackgroundMusic;
 import com.pointsph.edgame.SharedPref.SharedPreferenceHelper;
 import com.pointsph.edgame.Watcher.HomeWatcher;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -58,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private Button bSpelling;
     private Button bPronunciation;
     private Button bLogout;
-    private Button bHelp;
+    private Button bAbout;
     private ToggleButton soundStatus;
     private CoordinatorLayout lMainContainer;
 
@@ -121,7 +115,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             soundStatus.setBackgroundResource(R.drawable.bg_music_icon_off);
         }
-
         super.onResume();
     }
 
@@ -132,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
                 getSystemService(Context.POWER_SERVICE);
         boolean isScreenOn = false;
         if (pm != null) {
+
             isScreenOn = pm.isScreenOn();
         }
 
@@ -143,6 +137,16 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
     }
 
+
+    @Override
+    public void onBackPressed() {
+        GameOverHelper.rebaseUserMistakes(this);
+        UserScoreHelper.rebaseUserScore(this);
+        ConfettiHelper.rebaseGrammarFinishConffeti(this);
+        ConfettiHelper.rebaseSpellingFinishConfetti(getApplicationContext());
+        ConfettiHelper.rebasePronunFinishConfetti(getApplicationContext());
+        super.onBackPressed();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -159,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
 
         this.User = new User();
         this.FileHelper = new FileHelper(this);
-
+        this.Context = this;
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             this.User.setFirstName(extras.getString("firstName"));
@@ -182,12 +186,13 @@ public class MainActivity extends AppCompatActivity {
         this.bPronunciation = findViewById(R.id.button_pronunciation);
         this.bLogout = findViewById(R.id.button_log_out);
         this.lMainContainer = findViewById(R.id.main_container);
-        this.bHelp = findViewById(R.id.button_help);
+        this.bAbout = findViewById(R.id.button_about);
 
         /*my attach switch button for music*/
         this.soundStatus = findViewById(R.id.soundStatus);
-
-        this.tStatus.setText(String.format("Welcome back, %s!", this.User.FirstName));
+        //check and generate user message
+        UserLoginHelper.rememberThisUser(this,this.User.Username);
+        this.generateMessageForUserStatus();
         //this.tUserLevel.setText(String.format("%s", this.User.GrammarUserLevel));
 
         /*AMO INE ANG PAGA SET UP NA BACKGROUND NG IYO PROGRAMMER IN CANCEL KO
@@ -199,73 +204,101 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }*/
 
-        this.bEnglishGrammar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), EnglishGrammarActivity.class);
-                intent.putExtra("firstName", User.FirstName);
-                intent.putExtra("lastName", User.LastName);
-                intent.putExtra("birthday", User.Birthday);
-                intent.putExtra("username", User.Username);
-                intent.putExtra("grammarUserLevel", User.GrammarUserLevel);
-                intent.putExtra("pronunciationUserLevel", User.PronunciationUserLevel);
-                intent.putExtra("spellingUserLevel", User.SpellingUserLevel);
-                startActivity(intent);
-                finish();
+
+        this.bEnglishGrammar.setOnClickListener(view -> {
+            boolean checkStatus = UserInstructionHelper
+                                        .isGrammarInstructMessageDone(getApplicationContext(),User.Username);
+            if (checkStatus) {
+
+                //redirect the user with the corresponding information
+                setUserCredentials(EnglishGrammarActivity.class);
+            } else {
+
+                //the instruction message is display set to true now
+                UserInstructionHelper.setGrammarInstructMessageDone(getApplicationContext(),User.Username);
+
+                //display the instruction and redirect the user after hitting the ok button
+                    displayInstructorForUserAndRedirect("Choose the correct answer to complete " +
+                    "the given sentence " +
+                            "\n" +
+                            "\n" +
+                    "Remember : You could not proceed to the next level " +
+                    "unless you reach the level-up portion",EnglishGrammarActivity.class);
             }
+
         });
 
-        this.bSpelling.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), SpellingActivity.class);
-                intent.putExtra("firstName", User.FirstName);
-                intent.putExtra("lastName", User.LastName);
-                intent.putExtra("birthday", User.Birthday);
-                intent.putExtra("username", User.Username);
-                intent.putExtra("grammarUserLevel", User.GrammarUserLevel);
-                intent.putExtra("pronunciationUserLevel", User.PronunciationUserLevel);
-                intent.putExtra("spellingUserLevel", User.SpellingUserLevel);
-                startActivity(intent);
-                finish();
+
+        this.bSpelling.setOnClickListener(view -> {
+            boolean checkStatus = UserInstructionHelper
+                    .isSpellingInstructMessageDone(getApplicationContext(),User.Username);
+            if (checkStatus) {
+
+                //redirect the user with the corresponding information
+                setUserCredentials(SpellingActivity.class);
+
+            } else {
+
+                //the instruction message is display set to true now
+                UserInstructionHelper.setSpellingInstructMessageDone(getApplicationContext(),User.Username);
+
+                //display the instruction and redirect the user after hitting the ok button
+                displayInstructorForUserAndRedirect("Tap the play button to hear the word given " +
+                        "audio , then " +
+                        "type the correct spelling of the word " +
+                        "\n" +
+                        "\n" +
+                        "Remember : You could not proceed to the next level unless you reach " +
+                        "level-up portion",SpellingActivity.class);
             }
+
         });
 
-        this.bPronunciation.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), PronunciationActivity.class);
-                intent.putExtra("firstName", User.FirstName);
-                intent.putExtra("lastName", User.LastName);
-                intent.putExtra("birthday", User.Birthday);
-                intent.putExtra("username", User.Username);
-                intent.putExtra("grammarUserLevel", User.GrammarUserLevel);
-                intent.putExtra("pronunciationUserLevel", User.PronunciationUserLevel);
-                intent.putExtra("spellingUserLevel", User.SpellingUserLevel);
-                startActivity(intent);
-                finish();
+        this.bPronunciation.setOnClickListener(view -> {
+            boolean checkStatus = UserInstructionHelper
+                    .isPronunciationInstructMessageDone(getApplicationContext(),User.Username);
+            if (checkStatus) {
+                //redirect the user with the corresponding information
+                setUserCredentials(PronunciationActivity.class);
+
+            } else {
+                //the instruction message is display set to true now
+                UserInstructionHelper.setPronunciationInstructMessageDone(getApplicationContext(),User.Username);
+
+                //display the instruction and redirect the user after hitting the ok button
+                displayInstructorForUserAndRedirect("Tap the play button to hear " +
+                        "the word given in audio, then choose the corresponding " +
+                        "spelling of it's correct answer " +
+                        "\n" +
+                        "\n" +
+                        "Remember : You could not proceed to the next level unless you reach " +
+                        "level-up portion",PronunciationActivity.class);
             }
+
         });
 
-        this.bLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                intent.putExtra("firstName", "");
-                intent.putExtra("lastName", "");
-                intent.putExtra("birthday", "");
-                intent.putExtra("username", "");
-                intent.putExtra("grammarUserLevel", "");
-                intent.putExtra("pronunciationUserLevel", "");
-                intent.putExtra("spellingUserLevel", "");
-                startActivity(intent);
-                finish();
-            }
+        this.bLogout.setOnClickListener(view -> {
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+            intent.putExtra("firstName", "");
+            intent.putExtra("lastName", "");
+            intent.putExtra("birthday", "");
+            intent.putExtra("username", "");
+            intent.putExtra("grammarUserLevel", "");
+            intent.putExtra("pronunciationUserLevel", "");
+            intent.putExtra("spellingUserLevel", "");
+            removeRememberUser();
+            GameOverHelper.rebaseUserMistakes(getApplicationContext());
+            UserScoreHelper.rebaseUserScore(getApplicationContext());
+            ConfettiHelper.rebaseGrammarFinishConffeti(getApplicationContext());
+            ConfettiHelper.rebaseSpellingFinishConfetti(getApplicationContext());
+            ConfettiHelper.rebasePronunFinishConfetti(getApplicationContext());
+            startActivity(intent);
+            finish();
         });
 
         /*
          * REDIRECT TO HELP ACTIVITY ADD BY Vistal */
-        bHelp.setOnClickListener(new View.OnClickListener() {
+        bAbout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(),HelpActivity.class);
@@ -303,14 +336,41 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                startActivityForResult(i, RESULT_LOAD_IMAGE);
-            }
-        });
+      /*  FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> {
+            Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            startActivityForResult(i, RESULT_LOAD_IMAGE);
+        });*/
+    }
+
+    private void setUserCredentials(Class<?> activity) {
+        Intent intent = new Intent(getApplicationContext(), activity);
+        intent.putExtra("firstName", User.FirstName);
+        intent.putExtra("lastName", User.LastName);
+        intent.putExtra("birthday", User.Birthday);
+        intent.putExtra("username", User.Username);
+        intent.putExtra("grammarUserLevel", User.GrammarUserLevel);
+        intent.putExtra("pronunciationUserLevel", User.PronunciationUserLevel);
+        intent.putExtra("spellingUserLevel", User.SpellingUserLevel);
+        startActivity(intent);
+        finish();
+    }
+
+    private void displayInstructorForUserAndRedirect(String message,final Class<?> activity) {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            alertDialog.setMessage(message);
+            alertDialog.setPositiveButton("OK", (dialog, whichButton) -> setUserCredentials(activity));
+            alertDialog.setCancelable(false);
+            alertDialog.create();
+            alertDialog.show();
+    }
+
+    //generate a message for user added by vistal
+    private void generateMessageForUserStatus() {
+        //if login count is greater than equal to 3 means not first time
+        String message = (UserLoginHelper.isFirstTime(this, this.User.Username))
+                ? "Welcome" : "Welcome Back";
+        this.tStatus.setText(String.format("%s, %s!",message, this.User.Username));
     }
 
     /*
@@ -318,9 +378,7 @@ public class MainActivity extends AppCompatActivity {
     private void checkUserSoundOption() {
         SharedPreferenceHelper.PREF_FILE = "bg_music";
         boolean state = SharedPreferenceHelper.getSharedPreferenceBoolean(getApplicationContext(),User.Username+"sound",true);
-
         soundStatus.setChecked(state);
-
         if (soundStatus.isChecked()) {
             bindAndPlayMusic();
             SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), User.Username+"sound", true);
@@ -346,22 +404,34 @@ public class MainActivity extends AppCompatActivity {
         music.setClass(getApplicationContext(), BackgroundMusic.class);
         startService(music);
 
-        mHomeWatcher = new HomeWatcher(getApplicationContext());
+        mHomeWatcher = new HomeWatcher(Context);
         mHomeWatcher.setOnHomePressedListener(new HomeWatcher.OnHomePressedListener() {
             @Override
             public void onHomePressed() {
                 if (mServ != null) {
                     mServ.pauseMusic();
                 }
+                isUserPressHomeButton();
             }
             @Override
             public void onHomeLongPressed() {
                 if (mServ != null) {
                     mServ.pauseMusic();
                 }
+                isUserPressHomeButton();
             }
         });
         mHomeWatcher.startWatch();
+    }
+
+    private void isUserPressHomeButton() {
+        if(Context instanceof MainActivity) {
+            GameOverHelper.rebaseUserMistakes(getApplicationContext());
+            UserScoreHelper.rebaseUserScore(getApplicationContext());
+            ConfettiHelper.rebaseGrammarFinishConffeti(getApplicationContext());
+            ConfettiHelper.rebaseSpellingFinishConfetti(getApplicationContext());
+            ConfettiHelper.rebasePronunFinishConfetti(getApplicationContext());
+        }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -455,4 +525,15 @@ public class MainActivity extends AppCompatActivity {
 
         return picturePath;
     }
+
+    /*
+     * save the last login user
+     * */
+    private void removeRememberUser() {
+        SharedPreferenceHelper.PREF_FILE = "last_login";
+        SharedPreferenceHelper
+                .setSharedPreferenceString(getApplicationContext(),"username",null);
+    }
+
+
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<FrameLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -114,31 +114,55 @@
         </LinearLayout>
 
         <TextView
+            android:id="@+id/level"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Level : "
+            android:layout_weight=".50"
+            android:freezesText="true"
+            android:textColor="#2C3D3C"
+            android:textStyle="bold"
+            android:textSize="19sp"
+            android:layout_gravity="center_horizontal"
+           />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </TextView>
 
-        <TextView
-                android:id="@+id/lblInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:freezesText="true"
-                android:text="Press the play button to hear the sound."
-                android:textColor="#2C3D3C"
-                android:textStyle="bold"
-                android:textSize="17sp"
-                android:gravity="center_horizontal"
-             />
+      <RelativeLayout
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+
+          >
+
+          <TextView
+                  android:id="@+id/lblInfo"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:freezesText="true"
+                  android:text="Press the icon below to here the sound"
+                  android:textColor="#2C3D3C"
+                  android:textSize="17sp"
+                  android:textStyle="bold"
+                  android:textAlignment="center"
+
+              />
+
+
+
+
+      </RelativeLayout>
 
         <Button
             android:id="@+id/button_play"
-            android:width="250dp"
+            android:height="80dp"
+            android:background="@drawable/megaphone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_gravity="center_horizontal"
-            android:text="@string/button_play"
-            android:background="#F8AB37"
             android:textColor="#ffffff"
             android:textSize="18sp"
             android:textStyle="bold">
@@ -213,4 +237,9 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+    <nl.dionsegijn.konfetti.KonfettiView
+        android:id="@+id/viewKonfetti"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</FrameLayout>

@@ -39,6 +39,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.pointsph.edgame.Helpers.UserLoginHelper;
 import com.pointsph.edgame.Services.BackgroundMusic;
 import com.pointsph.edgame.SharedPref.SharedPreferenceHelper;
 import com.pointsph.edgame.Watcher.HomeWatcher;
@@ -189,35 +190,26 @@ public class LoginActivity extends AppCompatActivity {
                 new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
                 MY_PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE);
 
-        this.ePassword.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
-                if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
-                    return true;
-                }
-                return false;
-            }
-        });
-
-        this.bSignIn.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MediaPlayer sfx = MediaPlayer.create(getApplicationContext(), R.raw.click_sfx);
-                sfx.start();
+        this.ePassword.setOnEditorActionListener((textView, id, keyEvent) -> {
+            if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
                 attemptLogin();
+                return true;
             }
+            return false;
         });
 
-        this.bRegister.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MediaPlayer sfx = MediaPlayer.create(getApplicationContext(), R.raw.click_sfx);
-                sfx.start();
-                Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
-                startActivity(intent);
-                finish();
-            }
+        this.bSignIn.setOnClickListener(view -> {
+            MediaPlayer sfx = MediaPlayer.create(getApplicationContext(), R.raw.click_sfx);
+            sfx.start();
+            attemptLogin();
+        });
+
+        this.bRegister.setOnClickListener(view -> {
+            MediaPlayer sfx = MediaPlayer.create(getApplicationContext(), R.raw.click_sfx);
+            sfx.start();
+            Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+            startActivity(intent);
+            finish();
         });
 
 //        this.mLoginFormView = findViewById(R.id.login_form);
@@ -276,7 +268,8 @@ public class LoginActivity extends AppCompatActivity {
                 intent.putExtra("grammarUserLevel", this.User.GrammarUserLevel);
                 intent.putExtra("pronunciationUserLevel", this.User.PronunciationUserLevel);
                 intent.putExtra("spellingUserLevel", this.User.SpellingUserLevel);
-
+                //save the last logined user this method is added by vistal
+                UserLoginHelper.rememberThisUser(this,this.Username);
                 startActivity(intent);
                 finish();
             } else {
@@ -401,6 +394,8 @@ public class LoginActivity extends AppCompatActivity {
         //TODO: Replace this with your own logic
         return password.length() > 4;
     }
+
+
 
 
 }

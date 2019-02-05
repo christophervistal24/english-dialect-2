@@ -38,17 +38,16 @@
                 >
 
                 <ToggleButton
-                    android:layout_alignParentEnd="true"
-                    android:id="@+id/soundStatus"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:background="@drawable/bg_music_icon"
-                    android:text="@null"
-                    android:checked="true"
-                    android:textOn="@null"
-                    android:textOff="@null"
-
+                        android:layout_alignParentEnd="true"
+                        android:id="@+id/soundStatus"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:background="@drawable/bg_music_icon"
+                        android:text="@null"
+                        android:checked="true"
+                        android:textOn="@null"
+                        android:textOff="@null"
                     />
 
                 <TextView
@@ -135,9 +134,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:background="@drawable/round_corner_3"
-                    android:id="@+id/button_help"
+                    android:id="@+id/button_about"
                     android:layout_gravity="center_horizontal"
-                    android:text="@string/button_help"
+                    android:text="@string/button_about"
                     android:textColor="#141312"
                     android:textStyle="bold"
                     android:width="220dp"
