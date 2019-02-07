@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,6 +32,10 @@ import com.pointsph.edgame.Helpers.UserScoreHelper;
 import com.pointsph.edgame.Services.BackgroundMusic;
 import com.pointsph.edgame.SharedPref.SharedPreferenceHelper;
 import com.pointsph.edgame.Watcher.HomeWatcher;
+import com.shashank.sony.fancydialoglib.Animation;
+import com.shashank.sony.fancydialoglib.FancyAlertDialog;
+import com.shashank.sony.fancydialoglib.FancyAlertDialogListener;
+import com.shashank.sony.fancydialoglib.Icon;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -111,9 +116,9 @@ public class MainActivity extends AppCompatActivity {
             if (mServ != null) {
                 mServ.resumeMusic();
             }
-            soundStatus.setBackgroundResource(R.drawable.bg_music_icon);
+            soundStatus.setBackgroundResource(R.drawable.ic_volume_up_black_24dp);
         } else {
-            soundStatus.setBackgroundResource(R.drawable.bg_music_icon_off);
+            soundStatus.setBackgroundResource(R.drawable.ic_volume_off_black_24dp);
         }
         super.onResume();
     }
@@ -312,28 +317,26 @@ public class MainActivity extends AppCompatActivity {
         /*
         *    attach listener for sound option button add by vistal
         */
-       soundStatus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                SharedPreferenceHelper.PREF_FILE = "bg_music";
-                if (isChecked) {
-                    /*
-                     * resume background music                                                                                                                                                                                 background music for this activity
-                     */
-                    bindAndPlayMusic();
-                    SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(),User.Username+"sound",true);
-                    soundStatus.setBackgroundResource(R.drawable.bg_music_icon);
-                } else {
-                    doUnbindService();
-                    if (BackgroundMusic.mPlayer != null) {
-                        if (BackgroundMusic.mPlayer.isPlaying()) {
-                            BackgroundMusic.mPlayer.pause();
-                            SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(),User.Username+"sound",false);
-                            soundStatus.setBackgroundResource(R.drawable.bg_music_icon_off);
-                        }
-                    }
-                }
-            }
-        });
+       soundStatus.setOnCheckedChangeListener((buttonView, isChecked) -> {
+           SharedPreferenceHelper.PREF_FILE = "bg_music";
+           if (isChecked) {
+               /*
+                * resume background music                                                                                                                                                                                 background music for this activity
+                */
+               bindAndPlayMusic();
+               SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(),User.Username+"sound",true);
+               soundStatus.setBackgroundResource(R.drawable.ic_volume_up_black_24dp);
+           } else {
+               doUnbindService();
+               if (BackgroundMusic.mPlayer != null) {
+                   if (BackgroundMusic.mPlayer.isPlaying()) {
+                       BackgroundMusic.mPlayer.pause();
+                       SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(),User.Username+"sound",false);
+                       soundStatus.setBackgroundResource(R.drawable.ic_volume_off_black_24dp);
+                   }
+               }
+           }
+       });
 
 
       /*  FloatingActionButton fab = findViewById(R.id.fab);
@@ -357,12 +360,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void displayInstructorForUserAndRedirect(String message,final Class<?> activity) {
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-            alertDialog.setMessage(message);
-            alertDialog.setPositiveButton("OK", (dialog, whichButton) -> setUserCredentials(activity));
-            alertDialog.setCancelable(false);
-            alertDialog.create();
-            alertDialog.show();
+        new FancyAlertDialog.Builder(this)
+                .setTitle("I N F O R M A T I O N")
+                .setBackgroundColor(Color.parseColor("#303F9F"))
+                .setMessage(message)
+                .setNegativeBtnText("")
+                .setNegativeBtnBackground(Color.parseColor("#00141312"))  //Don't pass R.color.colorvalue
+                .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                .setPositiveBtnText("OK")
+                .setAnimation(Animation.POP)
+                .isCancellable(false)
+                .setIcon(R.drawable.ic_chat_black_24dp, Icon.Visible)
+                .OnPositiveClicked(() -> setUserCredentials(activity))
+                .build();
+//            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+//            alertDialog.setMessage(message);
+//            alertDialog.setPositiveButton("OK", (dialog, whichButton) -> setUserCredentials(activity));
+//            alertDialog.setCancelable(false);
+//            alertDialog.create();
+//            alertDialog.show();
     }
 
     //generate a message for user added by vistal
@@ -382,14 +398,14 @@ public class MainActivity extends AppCompatActivity {
         if (soundStatus.isChecked()) {
             bindAndPlayMusic();
             SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), User.Username+"sound", true);
-            soundStatus.setBackgroundResource(R.drawable.bg_music_icon);
+            soundStatus.setBackgroundResource(R.drawable.ic_volume_up_black_24dp);
         } else {
             doUnbindService();
             if (BackgroundMusic.mPlayer != null) {
                 if (BackgroundMusic.mPlayer.isPlaying()) {
                     BackgroundMusic.mPlayer.pause();
                     SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), User.Username+"sound", false);
-                    soundStatus.setBackgroundResource(R.drawable.bg_music_icon_off);
+                    soundStatus.setBackgroundResource(R.drawable.ic_volume_off_black_24dp);
                 }
             }
         }

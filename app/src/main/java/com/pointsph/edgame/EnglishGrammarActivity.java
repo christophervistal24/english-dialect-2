@@ -33,6 +33,9 @@ import com.pointsph.edgame.Helpers.UserScoreHelper;
 import com.pointsph.edgame.Services.BackgroundMusic;
 import com.pointsph.edgame.SharedPref.SharedPreferenceHelper;
 import com.pointsph.edgame.Watcher.HomeWatcher;
+import com.shashank.sony.fancydialoglib.Animation;
+import com.shashank.sony.fancydialoglib.FancyAlertDialog;
+import com.shashank.sony.fancydialoglib.Icon;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -45,6 +48,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Random;
 
 import nl.dionsegijn.konfetti.models.Shape;
@@ -93,6 +97,7 @@ public class EnglishGrammarActivity extends AppCompatActivity {
 
     private boolean isFinish = false;
     private boolean isBackward = true;
+    FancyAlertDialog.Builder messageDialog;
 
 
     private boolean mIsBound = false;
@@ -146,6 +151,7 @@ public class EnglishGrammarActivity extends AppCompatActivity {
             mServ.resumeMusic();
         }
       this.setScore();
+      this.setUserMistakes();
       super.onResume();
     }
 
@@ -197,6 +203,7 @@ public class EnglishGrammarActivity extends AppCompatActivity {
         this.mainContainer = findViewById(R.id.main_container);
         this.viewKonfetti = findViewById(R.id.viewKonfetti);
         this.lblWrong = findViewById(R.id.lblWrong);
+        messageDialog = new FancyAlertDialog.Builder(this);
 
         //rebase the array list
         if  (!RandomHelper.arl.isEmpty()) {
@@ -248,7 +255,7 @@ public class EnglishGrammarActivity extends AppCompatActivity {
                 //resume background music
                 bindAndPlayMusic();
                 SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(),User.Username+"sound",true);
-                soundStatus.setBackgroundResource(R.drawable.bg_music_icon);
+                soundStatus.setBackgroundResource(R.drawable.ic_volume_up_black_24dp);
             } else {
                 //stop background music
                 doUnbindService();
@@ -256,7 +263,7 @@ public class EnglishGrammarActivity extends AppCompatActivity {
                     if (BackgroundMusic.mPlayer.isPlaying()) {
                         BackgroundMusic.mPlayer.pause();
                         SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(),User.Username+"sound",false);
-                        soundStatus.setBackgroundResource(R.drawable.bg_music_icon_off);
+                        soundStatus.setBackgroundResource(R.drawable.ic_volume_off_black_24dp);
                     }
                 }
             }
@@ -290,15 +297,43 @@ public class EnglishGrammarActivity extends AppCompatActivity {
                     showQuestion();
                     Score = 0;
                     setScore();
+                    if(User.GrammarUserLevel.equals("5")) {
+                        //set UserScoreHelper level to = what the user choose
+                        UserScoreHelper.setLevel(UserScoreHelper.convertWordToLevel(level));
+                        //rebase the user score on that particular level
+                        UserScoreHelper.setCurrentScoreInGrammar(Context,UserScoreHelper.getLevel(),User.Username,0);
+                        setScore();
+                        getQuestionnaires(UserScoreHelper.getLevel());
+                        showQuestion();
+                    }
                 }
 
                 if (level.equals(Advance)) {
                     if (User.GrammarUserLevel.equals("1") || User.GrammarUserLevel.equals("2")) {
-                        Message.show("Level not yet reached. you need to answer " + (int) Math.ceil(((QuestionsCount+1) * .50) - Score) + " questions" +
-                                " " +
-                                "before you can jump to advance", Context);
+                        messageDialog
+                                .setTitle("I N F O R M A T I O N")
+                                .setBackgroundColor(Color.parseColor("#303F9F"))
+                                .setMessage("Level not yet reached. you need to answer " + (int) Math.ceil(((QuestionsCount+1) * .50) - Score) + " questions" +
+                                        " " +
+                                        "before you can jump to advance")
+                                .setNegativeBtnText("")
+                                .setNegativeBtnBackground(Color.parseColor("#00141312"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnText("OK")
+                                .setAnimation(Animation.POP)
+                                .isCancellable(false)
+                                .setIcon(R.drawable.ic_chat_black_24dp, Icon.Visible)
+                                .build();
                         isBackward = false;
                         sMode.setSelection(position - 1);
+                    } else if(User.GrammarUserLevel.equals("5")) {
+                        //set UserScoreHelper level to = what the user choose
+                        UserScoreHelper.setLevel(UserScoreHelper.convertWordToLevel(level));
+                        //rebase the user score on that particular level
+                        UserScoreHelper.setCurrentScoreInGrammar(Context,UserScoreHelper.getLevel(),User.Username,0);
+                        setScore();
+                        getQuestionnaires(UserScoreHelper.getLevel());
+                        showQuestion();
                     } else {
                         // Get the questionnaires based on the selected mode.
                         getQuestionnaires(level);
@@ -311,16 +346,38 @@ public class EnglishGrammarActivity extends AppCompatActivity {
 
                 if (level.equals(Expert)) {
                     if (User.GrammarUserLevel.equals("1") || User.GrammarUserLevel.equals("2")) {
-                        Message.show("Level not yet reached. you need to answer " + (int) Math.ceil(((QuestionsCount+1) * .50) - Score)  + "" +
-                                " questions to proceed in advance then answer " + (int) Math.ceil((QuestionsCount+1) * 0.9) + " questions" +
-                                " so you can jump to expert", Context);
+                        messageDialog
+                                .setTitle("I N F O R M A T I O N")
+                                .setBackgroundColor(Color.parseColor("#303F9F"))
+                                .setMessage("Level not yet reached. you need to answer " + (int) Math.ceil(((QuestionsCount+1) * .50) - Score)  + "" +
+                                        " questions to proceed in advance then answer " + (int) Math.ceil((QuestionsCount+1) * 0.9) + " questions" +
+                                        " so you can jump to expert")
+                                .setNegativeBtnText("")
+                                .setNegativeBtnBackground(Color.parseColor("#00141312"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnText("OK")
+                                .setAnimation(Animation.POP)
+                                .isCancellable(false)
+                                .setIcon(R.drawable.ic_chat_black_24dp, Icon.Visible)
+                                .build();
                         isBackward = false;
                         sMode.setSelection(position - 2);
                     } else if (User.GrammarUserLevel.equals("3") || User.GrammarUserLevel.equals("4")) {
 //                        Message.show("Advance to expert warning message.", Context);
-                        Message.show("Level not yet reached. you need to answer " + (int) Math.ceil(((QuestionsCount+1) * 0.9) - Score) + " questions" +
-                                " " +
-                                "before you can jump to expert", Context);
+                        messageDialog
+                                .setTitle("I N F O R M A T I O N")
+                                .setBackgroundColor(Color.parseColor("#303F9F"))
+                                .setMessage("Level not yet reached. you need to answer " + (int) Math.ceil(((QuestionsCount+1) * 0.9) - Score) + " questions" +
+                                        " " +
+                                        "before you can jump to expert")
+                                .setNegativeBtnText("")
+                                .setNegativeBtnBackground(Color.parseColor("#00141312"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnText("OK")
+                                .setAnimation(Animation.POP)
+                                .isCancellable(false)
+                                .setIcon(R.drawable.ic_chat_black_24dp, Icon.Visible)
+                                .build();
                         isBackward = false;
                         sMode.setSelection(position - 1);
                     } else {
@@ -373,18 +430,19 @@ public class EnglishGrammarActivity extends AppCompatActivity {
         //to resume the previous score of the user
         this.setScore();
 
-        //give information to the user about question that needs to answer to acquired level up
-        this.giveMessageDependingOnLevel();
-
         //checking if the user finish all the stages
         this.isUserFinishAllStages();
+
+        //give information to the user about question that needs to answer to acquired level up
+        this.giveMessageDependingOnLevel(false);
+
 
         //initialize and set user mistakes
         this.setUserMistakes();
     }
 
     private void setUserMistakes() {
-        int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.getGrammarUserLevel(),"grammar");
+        int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,UserScoreHelper.getLevel(),"grammar");
         lblWrong.setText(String.format("Wrong : %s", String.valueOf(noOfMistakes)));
     }
 
@@ -402,7 +460,8 @@ public class EnglishGrammarActivity extends AppCompatActivity {
     }
 
     //display information according to user level
-    private void giveMessageDependingOnLevel() {
+    private void giveMessageDependingOnLevel(boolean isLevelFinish) {
+        String msg = null;
         //first we need to get the level of the user
         String currentUserLevel = UserScoreHelper.convertLevelToWord(Integer.parseInt(User.GrammarUserLevel));
 
@@ -413,26 +472,61 @@ public class EnglishGrammarActivity extends AppCompatActivity {
 
         //check level of the user and give appropriate message
         if (User.getGrammarUserLevel().equals("1") || User.getGrammarUserLevel().equals("2")) {
-            Message.show("You are in Beginner, you need to answer " + (int) Math.ceil(((Questions.size() + 1) * .50) - Score) + " questions" +
+            msg ="You are in Beginner, you need to answer " + (int) Math.ceil(((Questions.size() + 1) * .50) - Score) + " questions" +
                     " " +
                     "before you can jump to advance \n" +
                     "\n\n"+
                     "Remember: \n" +
-                    "If you reached 5 mistakes your score will automatically back to zero.", Context);
+                    "If you reached 5 mistakes your score will automatically back to zero.";
         } else if (User.GrammarUserLevel.equals("3") || User.GrammarUserLevel.equals("4")) {
-            Message.show("You are in Advance, you need to answer " + (int) Math.ceil(((Questions.size() + 1) * 0.9) - Score) + "" +
-                    " questions so you can jump to expert" +
-                    "\n\n" +
-                    "Remember: \n" +
-                            "If you reach 5 mistakes your score will automatically back to zero"
-                    , Context);
+            if  (isLevelFinish) {
+                msg ="Very good that is correct! , now you are in Advance, you need to answer " + (int) Math.ceil(((Questions.size() + 1) * 0.9) - Score) + "" +
+                                " questions so you can jump to expert" +
+                                "\n\n" +
+                                "Remember: \n" +
+                                "If you reach 5 mistakes your score will automatically back to zero";
+            } else {
+                msg =
+                        "You are in Advance, you need to answer " + (int) Math.ceil(((Questions.size() + 1) * 0.9) - Score) + "" +
+                                " questions so you can jump to expert" +
+                                "\n\n" +
+                                "Remember: \n" +
+                                "If you reach 5 mistakes your score will automatically back to zero";
+            }
+
+
         } else if (User.GrammarUserLevel.equals("5") && this.Score < Questions.size()) {
-            Message.show("You are in Expert,  you need to answer " + (int) Math.ceil(((this.Questions.size())) - Score)+ " questions" +
-                    " " +
-                    "to finish this level" +
-                    "\n\n" +
-                    "Remember: \n" +
-                    "If you reach 5 mistakes your score will automatically back to zero", Context);
+            if (isLevelFinish) {
+                msg = "Very good, that is correct ! now you are in Expert,  you need to answer " + (int) Math.ceil(((this.Questions.size())) - Score)+ " questions" +
+                        " " +
+                        "to finish this level" +
+                        "\n\n" +
+                        "Remember: \n" +
+                        "If you reach 5 mistakes your score will automatically back to zero";
+            } else {
+                msg = "You are in Expert,  you need to answer " + (int) Math.ceil(((this.Questions.size())) - Score)+ " questions" +
+                        " " +
+                        "to finish this level" +
+                        "\n\n" +
+                        "Remember: \n" +
+                        "If you reach 5 mistakes your score will automatically back to zero";
+            }
+
+        }
+
+        if (!isFinish) {
+            new FancyAlertDialog.Builder(this)
+                    .setTitle("I N F O R M A T I O N")
+                    .setBackgroundColor(Color.parseColor("#303F9F"))
+                    .setMessage(msg)
+                    .setNegativeBtnText("")
+                    .setNegativeBtnBackground(Color.parseColor("#00141312"))  //Don't pass R.color.colorvalue
+                    .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                    .setPositiveBtnText("OK")
+                    .setAnimation(Animation.POP)
+                    .isCancellable(false)
+                    .setIcon(R.drawable.ic_chat_black_24dp, Icon.Visible)
+                    .build();
         }
 
     }
@@ -543,11 +637,15 @@ public class EnglishGrammarActivity extends AppCompatActivity {
     public void checkAnswer(String choice, String answer) {
         String msg;
         boolean isShowLevelUpMsg = false;
+        boolean isUserGameOver = false;
+        boolean isFinishLevel = false;
+        String resultTypeImage;
         boolean isCorrect = choice.trim().toUpperCase().equals(answer.trim().toUpperCase());
 
 
         if (isCorrect) {
             msg = "Very good, that is correct!";
+            resultTypeImage = "ic_check_black_24dp";
             // Add score.
             this.Score++;
             //music for correct
@@ -556,42 +654,49 @@ public class EnglishGrammarActivity extends AppCompatActivity {
             //track the score of user base on level
             UserScoreHelper.addCurrentScoreInGrammar(this,UserScoreHelper.getLevel(),User.Username);
 
-
-
-
             //display or update the ui
             this.setScore();
 
         }  else {
             msg = "Sorry, that is incorrect. The correct answer is " + answer + ".";
+            resultTypeImage = "ic_clear_black_24dp";
             //add mistake to user
-            GameOverHelper.addMistake(this,User.Username,User.getGrammarUserLevel(),"grammar");
+            GameOverHelper.addMistake(this,User.Username,UserScoreHelper.getLevel(),"grammar");
 
-            if (!GameOverHelper.isUserGameOver(this,User.Username,User.getGrammarUserLevel(),"grammar")) {
+            if (!GameOverHelper.isUserGameOver(this,User.Username,UserScoreHelper.getLevel(),"grammar")) {
                 SFXHelper.playMusic(getApplicationContext(),R.raw.wrong);
             }
 
         }
 
         //checking if the user is game over or not
-        if (GameOverHelper.isUserGameOver(this,User.Username,User.getGrammarUserLevel(),"grammar")) {
+        if (GameOverHelper.isUserGameOver(this,User.Username,UserScoreHelper.getLevel(),"grammar")) {
             SFXHelper.playMusic(getApplicationContext(),R.raw.game_over);
-            Message.show("GAME OVER",this);
+            isUserGameOver = true;
+            new FancyAlertDialog.Builder(this)
+                    .setTitle("Game Over")
+                    .setBackgroundColor(Color.parseColor("#303F9F"))
+                    .setMessage("Sorry , you reach 5 mistakes \n" +
+                            "The correct answer is " + answer)
+                    .setNegativeBtnText("OTHER CATEGORY")
+                    .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                    .setPositiveBtnText("OK")
+                    .setNegativeBtnBackground(Color.parseColor("#FFA9A7A8"))  //Don't pass R.color.colorvalue
+                    .setAnimation(Animation.POP)
+                    .isCancellable(true)
+                    .OnNegativeClicked(this::initMain)
+                    .setIcon(R.drawable.ic_err_black_24dp, Icon.Visible)
+                    .build();
 
             //rebase the no of mistakes in UI
-            GameOverHelper.rebaseUserMistakesInLevel(this,User.Username,User.getGrammarUserLevel(),"grammar");
+            GameOverHelper.rebaseUserMistakesInLevel(this,User.Username,UserScoreHelper.getLevel(),"grammar");
 
             //rebase the current score of the user in shared pref
             UserScoreHelper.setCurrentScoreInGrammar(Context,UserScoreHelper.getLevel(),User.Username,0);
 
-            //rebasing and set to 0
+        }
             this.setUserMistakes();
 
-        } else { //if not game over display user mistakes
-            //display the wrong answer of the user in UI
-            this.setUserMistakes();
-            //music for wrong
-        }
 
 
 
@@ -615,19 +720,25 @@ public class EnglishGrammarActivity extends AppCompatActivity {
             UserScoreHelper.setLevel(Integer.parseInt(User.getGrammarUserLevel()));
             switch(currentLevel) {
                 case 2:
-                    this.giveMessageDependingOnLevel();
+                    isFinishLevel = true;
+                    this.giveMessageDependingOnLevel(true);
+                    this.setUserMistakes();
                     RandomHelper.rebaseListNumber();
                     SFXHelper.playMusic(getApplicationContext(),R.raw.level_up);
                     break;
 
                 case 4:
-                    this.giveMessageDependingOnLevel();
+                    isFinishLevel = true;
+                    this.giveMessageDependingOnLevel(true);
+                    this.setUserMistakes();
                     RandomHelper.rebaseListNumber();
                     SFXHelper.playMusic(getApplicationContext(),R.raw.level_up);
                     break;
 
                 case 5:
-                    this.giveMessageDependingOnLevel();
+                    isFinishLevel = true;
+                    this.giveMessageDependingOnLevel(true);
+                    this.setUserMistakes();
                     RandomHelper.rebaseListNumber();
                     SFXHelper.playMusic(getApplicationContext(),R.raw.level_up);
                     break;
@@ -639,7 +750,27 @@ public class EnglishGrammarActivity extends AppCompatActivity {
 
         //rebase the current score of the user since promoted to next level
         this.setScore();
-        Message.show(msg, this.Context);
+//        Message.show(msg, this.Context);
+
+        if (!isUserGameOver) {
+           if (!isFinishLevel) {
+               int msgIcon = getResources().getIdentifier(resultTypeImage,"drawable", Objects.requireNonNull(this).getPackageName());
+               String title = (resultTypeImage.contains("check")) ? "C o r r e c t" : "W r o n g".toUpperCase();
+               new FancyAlertDialog.Builder(this)
+                       .setTitle(title)
+                       .setBackgroundColor(Color.parseColor("#303F9F"))
+                       .setMessage(msg)
+                       .setNegativeBtnText("")
+                       .setNegativeBtnBackground(Color.parseColor("#00141312"))  //Don't pass R.color.colorvalue
+                       .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                       .setPositiveBtnText("OK")
+                       .setAnimation(Animation.POP)
+                       .isCancellable(false)
+                       .setIcon(msgIcon, Icon.Visible)
+                       .build();
+           }
+        }
+
 
         // Set current level for a user in UI
         this.displaySetLevel();
@@ -990,10 +1121,10 @@ public class EnglishGrammarActivity extends AppCompatActivity {
         if (state) {
             bindAndPlayMusic();
             SharedPreferenceHelper.setSharedPreferenceBoolean(getApplicationContext(), this.User.Username+"sound", true);
-            soundStatus.setBackgroundResource(R.drawable.bg_music_icon);
+            soundStatus.setBackgroundResource(R.drawable.ic_volume_up_black_24dp);
         } else {
             doUnbindService();
-            soundStatus.setBackgroundResource(R.drawable.bg_music_icon_off);
+            soundStatus.setBackgroundResource(R.drawable.ic_volume_off_black_24dp);
             if (BackgroundMusic.mPlayer != null) {
                 if (BackgroundMusic.mPlayer.isPlaying()) {
                     BackgroundMusic.mPlayer.pause();

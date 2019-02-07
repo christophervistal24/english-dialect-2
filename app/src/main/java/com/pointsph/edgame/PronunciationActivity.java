@@ -25,12 +25,17 @@ import android.widget.Toast;
 
 import com.pointsph.edgame.Helpers.ConfettiHelper;
 import com.pointsph.edgame.Helpers.GameOverHelper;
+import com.pointsph.edgame.Helpers.LevelHelper;
 import com.pointsph.edgame.Helpers.RandomHelper;
 import com.pointsph.edgame.Helpers.SFXHelper;
 import com.pointsph.edgame.Helpers.UserLevelHelper;
 import com.pointsph.edgame.Helpers.UserScoreHelper;
 import com.pointsph.edgame.Helpers.UserStatusHelper;
 import com.pointsph.edgame.Watcher.HomeWatcher;
+import com.shashank.sony.fancydialoglib.Animation;
+import com.shashank.sony.fancydialoglib.FancyAlertDialog;
+import com.shashank.sony.fancydialoglib.FancyAlertDialogListener;
+import com.shashank.sony.fancydialoglib.Icon;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -83,6 +88,7 @@ public class PronunciationActivity extends AppCompatActivity {
 
     private boolean isFinish = false;
     private boolean isBackward = true;
+    FancyAlertDialog.Builder messageDialog;
 
     HomeWatcher mHomeWatcher;
 
@@ -117,6 +123,7 @@ public class PronunciationActivity extends AppCompatActivity {
         this.mainContainer = findViewById(R.id.main_container);
         this.viewKonfetti = findViewById(R.id.viewKonfetti);
         this.lblWrong = findViewById(R.id.lblWrong);
+        messageDialog = new FancyAlertDialog.Builder(this);
 
         //rebase the array list
         if  (!RandomHelper.arl.isEmpty()) {
@@ -182,16 +189,45 @@ public class PronunciationActivity extends AppCompatActivity {
 
                 if (level.equals(Beginner)) {
                     CurrentPronunciationFolder = FileHelper.PronunciationBeginnerFolder;
+                     if(User.PronunciationUserLevel.equals("5")) {
+                        //set UserScoreHelper level to = what the user choose
+                        UserScoreHelper.setLevel(UserScoreHelper.convertWordToLevel(level));
+                        //rebase the user score on that particular level
+                        UserScoreHelper.setCurrentScoreInPronunciation(Context,UserScoreHelper.getLevel(),User.Username,0);
+                        setScore();
+                        initAudioFiles();
+                        showQuestion();
+                    }
+
                 }
 
                 if (level.equals(Advance)) {
                     if (User.PronunciationUserLevel.equals("1") || User.PronunciationUserLevel.equals("2")) {
-                        Message.show("Level not yet reached. you need to answer " + (int) Math.ceil(((AudioFiles.size()+1) * .50) - Score) + " questions" +
-                                " " +
-                                "before you can jump to advance", Context);
+                        messageDialog
+                                .setTitle("I N F O R M A T I O N")
+                                .setBackgroundColor(Color.parseColor("#303F9F"))
+                                .setMessage("Level not yet reached. you need to answer " + (int) Math.ceil(((AudioFiles.size()+1) * .50) - Score) + " questions" +
+                                        " " +
+                                        "before you can jump to advance")
+                                .setNegativeBtnText("")
+                                .setNegativeBtnBackground(Color.parseColor("#00141312"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnText("OK")
+                                .setAnimation(Animation.POP)
+                                .isCancellable(false)
+                                .setIcon(R.drawable.ic_chat_black_24dp, Icon.Visible)
+                                .build();
                         isBackward = false;
                         sMode.setSelection(position - 1);
                         CurrentPronunciationFolder = FileHelper.PronunciationBeginnerFolder;
+                    } else if(User.PronunciationUserLevel.equals("5")) {
+                        //set UserScoreHelper level to = what the user choose
+                        UserScoreHelper.setLevel(UserScoreHelper.convertWordToLevel(level));
+                        //rebase the user score on that particular level
+                        UserScoreHelper.setCurrentScoreInPronunciation(Context,UserScoreHelper.getLevel(),User.Username,0);
+                        setScore();
+                        initAudioFiles();
+                        showQuestion();
                     } else {
                         isBackward = true;
                         CurrentPronunciationFolder = FileHelper.PronunciationAdvanceFolder;
@@ -200,16 +236,38 @@ public class PronunciationActivity extends AppCompatActivity {
 
                 if (level.equals(Expert)) {
                     if (User.PronunciationUserLevel.equals("1") || User.PronunciationUserLevel.equals("2")) {
-                        Message.show("Level not yet reached. you need to answer " + (int) Math.ceil(((AudioFiles.size()+1) * .50) - Score)  + "" +
-                                " questions to proceed in advance then answer " + (int) Math.ceil((AudioFiles.size()+1) * 0.9) + " questions" +
-                                " so you can jump to expert", Context);
+                        messageDialog
+                                .setTitle("I N F O R M A T I O N")
+                                .setBackgroundColor(Color.parseColor("#303F9F"))
+                                .setMessage("Level not yet reached. you need to answer " + (int) Math.ceil(((AudioFiles.size()+1) * .50) - Score)  + "" +
+                                        " questions to proceed in advance then answer " + (int) Math.ceil((AudioFiles.size()+1) * 0.9) + " questions" +
+                                        " so you can jump to expert")
+                                .setNegativeBtnText("")
+                                .setNegativeBtnBackground(Color.parseColor("#00141312"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnText("OK")
+                                .setAnimation(Animation.POP)
+                                .isCancellable(false)
+                                .setIcon(R.drawable.ic_chat_black_24dp, Icon.Visible)
+                                .build();
                         isBackward = false;
                         sMode.setSelection(position - 2);
                         CurrentPronunciationFolder = FileHelper.PronunciationBeginnerFolder;
                     } else if (User.PronunciationUserLevel.equals("3") || User.PronunciationUserLevel.equals("4")) {
-                        Message.show("Level not yet reached. you need to answer " + (int) Math.ceil(((AudioFiles.size()+1) * 0.9) - Score) + " questions" +
-                                " " +
-                                "before you can jump to expert", Context);
+                                messageDialog
+                                .setTitle("I N F O R M A T I O N")
+                                .setBackgroundColor(Color.parseColor("#303F9F"))
+                                .setMessage("Level not yet reached. you need to answer " + (int) Math.ceil(((AudioFiles.size()+1) * 0.9) - Score) + " questions" +
+                                        " " +
+                                        "before you can jump to expert")
+                                .setNegativeBtnText("")
+                                .setNegativeBtnBackground(Color.parseColor("#00141312"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                                .setPositiveBtnText("OK")
+                                .setAnimation(Animation.POP)
+                                .isCancellable(false)
+                                .setIcon(R.drawable.ic_chat_black_24dp, Icon.Visible)
+                                .build();
                         isBackward = false;
                         sMode.setSelection(position - 1);
                         CurrentPronunciationFolder = FileHelper.PronunciationAdvanceFolder;
@@ -258,13 +316,15 @@ public class PronunciationActivity extends AppCompatActivity {
         //to resume the previous score of the user
         this.setScore();
 
-        //give information to the user about question that needs to answer to acquired level up
-        giveMessageDependingOnLevel();
         //checking if the user finish all the stages
         isUserFinishAllStages();
 
-        int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.PronunciationUserLevel,"pronunciation");
-        lblWrong.setText(String.format("Wrong : %s", String.valueOf(noOfMistakes)));
+        //give information to the user about question that needs to answer to acquired level up
+        giveMessageDependingOnLevel(false);
+
+
+
+        this.setUserMistakes();
 
     }
 
@@ -284,6 +344,7 @@ public class PronunciationActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         this.setScore();
+        this.setUserMistakes();
         super.onResume();
     }
 
@@ -294,7 +355,8 @@ public class PronunciationActivity extends AppCompatActivity {
     }
 
     //display information according to user level
-    private void giveMessageDependingOnLevel() {
+    private void giveMessageDependingOnLevel(boolean isLevelFinish) {
+        String msg = null;
         //get the pronunciation to easily calculate the no of questions that the user need to answer
         this.setScore(); //update the user score
         CurrentPronunciationFolder = "Pronunciation/".concat(UserScoreHelper.getLevel());
@@ -303,25 +365,60 @@ public class PronunciationActivity extends AppCompatActivity {
 
         //check level of the user and give appropriate message
         if (User.getPronunciationUserLevel().equals("1") || User.getPronunciationUserLevel().equals("2")) {
-            Message.show("You are in Beginner, you need to answer " + (int) Math.ceil(((this.AudioFiles.size() + 1) * .50) -  Score) + " questions" +
+            msg = "You are in Beginner, you need to answer " + (int) Math.ceil(((this.AudioFiles.size() + 1) * .50) -  Score) + " questions" +
                     " " +
                     "before you can jump to advance \n\n" +
                     "Remember: \n" +
-                    "If you reach 5 mistakes your score will automatically back to zero.", Context);
+                    "If you reach 5 mistakes your score will automatically back to zero.";
         } else if (User.getPronunciationUserLevel().equals("3") || User.getPronunciationUserLevel().equals("4")) {
-            Message.show("You are in Advance, you need to answer " + (int) Math.ceil(((this.AudioFiles.size() + 1) * 0.9) - Score) + "" +
-                    " questions so you can jump to expert \n" +
-                    "\n\n" +
-                    "Remember:\n" +
-                    "If you reach 5 mistakes your score will automatically back to zero.", Context);
+            if (isLevelFinish) {
+                msg = "Very good that is correct!, now you are in Advance, you need to answer " + (int) Math.ceil(((this.AudioFiles.size() + 1) * 0.9) - Score) + "" +
+                        " questions so you can jump to expert \n" +
+                        "\n\n" +
+                        "Remember:\n" +
+                        "If you reach 5 mistakes your score will automatically back to zero.";
+            } else {
+                msg = "You are in Advance, you need to answer " + (int) Math.ceil(((this.AudioFiles.size() + 1) * 0.9) - Score) + "" +
+                        " questions so you can jump to expert \n" +
+                        "\n\n" +
+                        "Remember:\n" +
+                        "If you reach 5 mistakes your score will automatically back to zero.";
+            }
+
         } else if (User.getPronunciationUserLevel().equals("5") && this.Score < this.AudioFiles.size()) {
-            Message.show("You are in Expert,  you need to answer " + (int) Math.ceil(((this.AudioFiles.size())) - Score) + " questions" +
-                    " " +
-                    "to finish this level" +
-                    "\n\n" +
-                    "Remember:\n" +
-                    "If you reach 5 mistakes your score will automatically back to zero.", Context);
+          if (isLevelFinish) {
+              msg = "Very good, that is correct! now you are in Expert,  you need to answer " + (int) Math.ceil(((this.AudioFiles.size())) - Score) + " questions" +
+                      " " +
+                      "to finish this level" +
+                      "\n\n" +
+                      "Remember:\n" +
+                      "If you reach 5 mistakes your score will automatically back to zero.";
+          } else {
+              msg = "You are in Expert,  you need to answer " + (int) Math.ceil(((this.AudioFiles.size())) - Score) + " questions" +
+                      " " +
+                      "to finish this level" +
+                      "\n\n" +
+                      "Remember:\n" +
+                      "If you reach 5 mistakes your score will automatically back to zero.";
+          }
         }
+
+        if (!isFinish) {
+            new FancyAlertDialog.Builder(this)
+                    .setTitle("I N F O R M A T I O N")
+                    .setBackgroundColor(Color.parseColor("#303F9F"))
+                    .setMessage(msg)
+                    .setNegativeBtnText("")
+                    .setNegativeBtnBackground(Color.parseColor("#00141312"))  //Don't pass R.color.colorvalue
+                    .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                    .setPositiveBtnText("OK")
+                    .setAnimation(Animation.POP)
+                    .isCancellable(false)
+                    .setIcon(R.drawable.ic_chat_black_24dp, Icon.Visible)
+                    .build();
+        }
+
+
     }
 
     private void isUserFinishAllStages() {
@@ -492,12 +589,16 @@ public class PronunciationActivity extends AppCompatActivity {
     public void checkAnswer(String choice, String answer) {
         String msg;
         boolean isShowLevelUpMsg = false;
+        boolean isUserGameOver = false;
+        boolean isFinishLevel = false;
+        String resultTypeImage;
         boolean isCorrect = choice.trim().toUpperCase().equals(answer.trim().toUpperCase());
 
         this.setScore(); //update the user score
 
         if (isCorrect) {
             msg = "Very good, that is correct!";
+            resultTypeImage = "ic_check_black_24dp";
             // Add score.
             this.Score++;
             //music for correct answer
@@ -508,10 +609,11 @@ public class PronunciationActivity extends AppCompatActivity {
         }  else {
             msg = "Sorry, that is incorrect. The correct answer is " + answer + ".";
 
+            resultTypeImage = "ic_clear_black_24dp";
             //add mistake to user
-            GameOverHelper.addMistake(this,User.Username,User.getPronunciationUserLevel(),"pronunciation");
+//            GameOverHelper.addMistake(this,User.Username,UserScoreHelper.getLevel(),"pronunciation");
 
-            if (!GameOverHelper.isUserGameOver(this,User.Username,User.getPronunciationUserLevel(),"pronunciation")) {
+            if (!GameOverHelper.isUserGameOver(this,User.Username,UserScoreHelper.getLevel(),"pronunciation")) {
                 SFXHelper.playMusic(getApplicationContext(),R.raw.wrong);
             }
 
@@ -519,28 +621,32 @@ public class PronunciationActivity extends AppCompatActivity {
         }
 
         //checking if the user is game over or not
-        if (GameOverHelper.isUserGameOver(this,User.Username,User.getPronunciationUserLevel(),"pronunciation")) {
+        if (GameOverHelper.isUserGameOver(this,User.Username,UserScoreHelper.getLevel(),"pronunciation")) {
             SFXHelper.playMusic(getApplicationContext(),R.raw.game_over);
-            Message.show("GAME OVER",this);
+            isUserGameOver = true;
+            new FancyAlertDialog.Builder(this)
+                    .setTitle("Game Over")
+                    .setBackgroundColor(Color.parseColor("#303F9F"))
+                    .setMessage("Sorry , you reach 5 mistakes \n" +
+                            "The correct answer is " + answer)
+                    .setNegativeBtnText("OTHER CATEGORY")
+                    .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                    .setPositiveBtnText("OK")
+                    .setNegativeBtnBackground(Color.parseColor("#FFA9A7A8"))  //Don't pass R.color.colorvalue
+                    .setAnimation(Animation.POP)
+                    .isCancellable(true)
+                    .OnNegativeClicked(this::initMain)
+                    .setIcon(R.drawable.ic_err_black_24dp, Icon.Visible)
+                    .build();
 
-            //rebase the no of mistakes in UI
-            GameOverHelper.rebaseUserMistakesInLevel(this,User.Username,User.getPronunciationUserLevel(),"pronunciation");
+            //rebase the no. of mistakes in UI
+            GameOverHelper.rebaseUserMistakesInLevel(this,User.Username,UserScoreHelper.getLevel(),"pronunciation");
 
             //rebase the current score of the user in shared pref
             UserScoreHelper.setCurrentScoreInPronunciation(this,UserScoreHelper.getLevel(),User.Username,0);
 
-
-
-
-            //rebasing and set to 0
-            this.setUserMistakes();
-
-        } else { //if not game over display user mistakes
-            //display the wrong answer of the user in UI
-            this.setUserMistakes();
-            //music for wrong
         }
-
+            this.setUserMistakes();
 
         // Determine level up.
         if (this.isLevelUp()) {
@@ -561,20 +667,26 @@ public class PronunciationActivity extends AppCompatActivity {
             switch(currentLevel) {
 
                 case 2:
-                    this.giveMessageDependingOnLevel();
+                    isFinishLevel = true;
+                    this.giveMessageDependingOnLevel(true);
                     RandomHelper.rebaseListNumber();
+                    this.setUserMistakes();
                     SFXHelper.playMusic(getApplicationContext(),R.raw.level_up);
                     break;
 
                 case 4:
-                    this.giveMessageDependingOnLevel();
+                    isFinishLevel = true;
+                    this.giveMessageDependingOnLevel(true);
                     RandomHelper.rebaseListNumber();
+                    this.setUserMistakes();
                     SFXHelper.playMusic(getApplicationContext(),R.raw.level_up);
                     break;
 
                 case 5:
-                    this.giveMessageDependingOnLevel();
+                    isFinishLevel = true;
+                    this.giveMessageDependingOnLevel(true);
                     RandomHelper.rebaseListNumber();
+                    this.setUserMistakes();
                     SFXHelper.playMusic(getApplicationContext(),R.raw.level_up);
                     break;
             }
@@ -582,7 +694,25 @@ public class PronunciationActivity extends AppCompatActivity {
         }
         //rebase the current score of the user since promoted to next level
         this.setScore();
-        Message.show(msg, this.Context);
+
+        if (!isUserGameOver) {
+            if  (!isFinishLevel) {
+                int msgIcon = getResources().getIdentifier(resultTypeImage,"drawable", Objects.requireNonNull(this).getPackageName());
+                String title = (resultTypeImage.contains("check")) ? "C o r r e c t" : "W r o n g".toUpperCase();
+                new FancyAlertDialog.Builder(this)
+                        .setTitle(title)
+                        .setBackgroundColor(Color.parseColor("#303F9F"))
+                        .setMessage(msg)
+                        .setNegativeBtnText("")
+                        .setNegativeBtnBackground(Color.parseColor("#00141312"))  //Don't pass R.color.colorvalue
+                        .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
+                        .setPositiveBtnText("OK")
+                        .setAnimation(Animation.POP)
+                        .isCancellable(false)
+                        .setIcon(msgIcon, Icon.Visible)
+                        .build();
+            }
+        }
 
 
         // Set current level for a user in UI
@@ -595,7 +725,7 @@ public class PronunciationActivity extends AppCompatActivity {
     }
 
     private void setUserMistakes() {
-        int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.getPronunciationUserLevel(),"pronunciation");
+        int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,UserScoreHelper.getLevel(),"pronunciation");
         lblWrong.setText(String.format("Wrong : %s", String.valueOf(noOfMistakes)));
     }
 

@@ -2,6 +2,7 @@ package com.pointsph.edgame.Helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 import com.pointsph.edgame.SharedPref.SharedPreferenceHelper;
 
@@ -15,7 +16,7 @@ public class GameOverHelper {
     public static void addMistake(Context context  , String username , String level , String activity)
     {
         SharedPreferenceHelper.PREF_FILE = "user_mistake";
-        int userWrongAnswer = getUserMistake(context,username,level , activity);
+        int userWrongAnswer = getUserMistake(context,username,level,activity);
         userWrongAnswer++;
         SharedPreferenceHelper.setSharedPreferenceInt(context,username.concat(activity+"mistakes"+level),userWrongAnswer);
     }
@@ -23,7 +24,7 @@ public class GameOverHelper {
     public static void setMistake(Context context  , String username , String level , String activity)
     {
         SharedPreferenceHelper.PREF_FILE = "user_mistake";
-        SharedPreferenceHelper.setSharedPreferenceInt(context,username.concat(activity+"mistakes"+level),0);
+        SharedPreferenceHelper.setSharedPreferenceInt(context,username.concat(activity+"mistakes").concat(level),0);
     }
 
     /**
