@@ -114,6 +114,7 @@ public class SpellingActivity extends AppCompatActivity {
         if  (!RandomHelper.arl.isEmpty()) {
             RandomHelper.rebaseListNumber();
         }
+
         //listener if the user press the home button
         mHomeWatcher = new HomeWatcher(Context);
         mHomeWatcher.setOnHomePressedListener(new HomeWatcher.OnHomePressedListener() {
@@ -445,20 +446,21 @@ public class SpellingActivity extends AppCompatActivity {
             this.setScore();
         }  else {
             msg = "Sorry, that is incorrect. The correct answer is " + correctAnswer + ".";
-            this.WrongAnswers++;
-            //music for wrong answer
-            SFXHelper.playMusic(getApplicationContext(),R.raw.wrong);
-            //track and set wrong answer
 
-            //TODO uncomment this after development mode
             //add mistake to user
             GameOverHelper.addMistake(this,User.Username,User.getSpellingUserLevel(),"spelling");
+
+            if (!GameOverHelper.isUserGameOver(this,User.Username,User.getSpellingUserLevel(),"spelling")) {
+                //music for wrong answer
+                SFXHelper.playMusic(getApplicationContext(),R.raw.wrong);
+            }
+
         }
 
-        int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.getSpellingUserLevel(),"spelling");
 
         //checking if the user is game over or not
         if (GameOverHelper.isUserGameOver(this,User.Username,User.getSpellingUserLevel(),"spelling")) {
+            SFXHelper.playMusic(getApplicationContext(),R.raw.game_over);
             Message.show("GAME OVER",this);
 
             //rebase the no of mistakes in UI
