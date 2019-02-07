@@ -113,11 +113,29 @@
 
      />
 
+            </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
+            <TextView
+                android:id="@+id/lblWrong"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".50"
+                android:freezesText="true"
+                android:text="Wrong: 0"
+                android:textAlignment="textStart"
+                android:textColor="#2C3D3C"
+                android:textStyle="bold"
+                android:textSize="19sp"
+                android:layout_marginStart="5dp"
 
-
+                />
         </LinearLayout>
+
 
         <TextView
             android:id="@+id/level"
@@ -146,7 +164,7 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:freezesText="true"
-              android:text="Press the icon below to here the sound"
+              android:text="Press the icon below to hear the sound"
               android:textColor="#2C3D3C"
               android:textStyle="bold"
               android:textSize="17sp"

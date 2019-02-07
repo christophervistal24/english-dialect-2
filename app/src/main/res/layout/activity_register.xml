@@ -39,22 +39,26 @@
 
     </LinearLayout>
 
+
+    <TextView
+        android:layout_below="@id/images"
+        android:id="@+id/lblStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:freezesText="true"
+        android:textAlignment="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textColor="@android:color/holo_red_dark" />
+
     <LinearLayout
-            android:layout_below="@+id/images"
+            android:layout_below="@+id/lblStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:layout_centerInParent="true"
         >
 
-            <TextView
-                android:id="@+id/lblStatus"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:freezesText="true"
-                android:textAlignment="center"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="@android:color/holo_red_dark" />
+
 
             <TextView
                 android:visibility="gone"

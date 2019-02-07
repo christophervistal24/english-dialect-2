@@ -61,6 +61,7 @@ public class SpellingActivity extends AppCompatActivity {
     private TextView tNameLevel;
     private TextView tScore;
     private TextView tLevel;
+    private TextView lblWrong;
     private Spinner sMode;
     private Button bPlay;
     private EditText eAnswer;
@@ -107,7 +108,12 @@ public class SpellingActivity extends AppCompatActivity {
         this.bHome = findViewById(R.id.button_home);
         this.mainContainer = findViewById(R.id.main_container);
         this.viewKonfetti = findViewById(R.id.viewKonfetti);
+        this.lblWrong = findViewById(R.id.lblWrong);
 
+        //rebase the array list
+        if  (!RandomHelper.arl.isEmpty()) {
+            RandomHelper.rebaseListNumber();
+        }
         //listener if the user press the home button
         mHomeWatcher = new HomeWatcher(Context);
         mHomeWatcher.setOnHomePressedListener(new HomeWatcher.OnHomePressedListener() {
@@ -239,6 +245,9 @@ public class SpellingActivity extends AppCompatActivity {
 
         //checking if the user finish all the stages
         this.isUserFinishAllStages();
+
+        int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.getSpellingUserLevel(),"spelling");
+        lblWrong.setText(String.format("Wrong : %s", String.valueOf(noOfMistakes)));
     }
 
     private void isUserPressHomeButton() {
@@ -289,14 +298,23 @@ public class SpellingActivity extends AppCompatActivity {
         if (User.getSpellingUserLevel().equals("1") || User.getSpellingUserLevel().equals("2")) {
             Message.show("You are in Beginner, you need to answer " + (int) Math.ceil(((this.Spellings.size() + 1) * .50) - Score) + " questions" +
                     " " +
-                    "before you can jump to advance", Context);
+                    "before you can jump to advance \n" +
+                    "\n\n"+
+                    "Remember: \n" +
+                    "If you reach 5 mistakes your score will automatically back to zero.", Context);
         } else if (User.getSpellingUserLevel().equals("3") || User.getSpellingUserLevel().equals("4")) {
             Message.show("You are in Advance, you need to answer " + (int) Math.ceil(((this.Spellings.size() + 1) * 0.9) - Score) + " questions" +
-                    " so you can jump to expert", Context);
+                    " so you can jump to expert \n" +
+                    " \n\n" +
+                    "Remember: \n" +
+                    "If you reach 5 mistakes your score will automatically back to zero.", Context);
         } else if (User.getSpellingUserLevel().equals("5") && this.Score < this.Spellings.size()) {
             Message.show("You are in Expert,  you need to answer " + (int) Math.ceil((this.Spellings.size()) - Score) + " questions" +
                     " " +
-                    "to finish this level", Context);
+                    "to finish this level" +
+                    "\n\n" +
+                    "Remember: \n" +
+                    "If you reach 5 mistakes your score will automatically back to zero.", Context);
         }
     }
     @Override
@@ -434,18 +452,31 @@ public class SpellingActivity extends AppCompatActivity {
 
             //TODO uncomment this after development mode
             //add mistake to user
-//            GameOverHelper.addMistake(this,User.Username,User.getSpellingUserLevel());
+            GameOverHelper.addMistake(this,User.Username,User.getSpellingUserLevel(),"spelling");
         }
 
+        int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.getSpellingUserLevel(),"spelling");
+
         //checking if the user is game over or not
-        if (GameOverHelper.isUserGameOver(this,User.Username,User.getSpellingUserLevel())) {
-            int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.getSpellingUserLevel());
-            Toast.makeText(this, "Game over no. of mistake : " + String.valueOf(noOfMistakes), Toast.LENGTH_SHORT).show();
-            //rebase the mistakes count of the user
-            GameOverHelper.rebaseUserMistakes(this);
+        if (GameOverHelper.isUserGameOver(this,User.Username,User.getSpellingUserLevel(),"spelling")) {
+            Message.show("GAME OVER",this);
+
+            //rebase the no of mistakes in UI
+            GameOverHelper.rebaseUserMistakesInLevel(this,User.Username,User.getSpellingUserLevel(),"spelling");
+
             //rebase the current score of the user in shared pref
-            UserScoreHelper.rebaseUserScore(this);
+            UserScoreHelper.setCurrentScoreInSpelling(this,UserScoreHelper.getLevel(),User.Username,0);
+
+            //rebase the no of mistakes in UI
+            this.setUserMistakes();
+
+        } else {
+            //display the wrong answer of the user in UI
+            this.setUserMistakes();
         }
+
+
+
 
 
         // Determine level up.
@@ -498,6 +529,11 @@ public class SpellingActivity extends AppCompatActivity {
 
         // Show another question.
         //this.showSpelling();
+    }
+
+    private void setUserMistakes() {
+        int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.getSpellingUserLevel(),"spelling");
+        lblWrong.setText(String.format("Wrong : %s", String.valueOf(noOfMistakes)));
     }
 
     private void generateConfetti() {

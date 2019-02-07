@@ -64,6 +64,7 @@ public class PronunciationActivity extends AppCompatActivity {
     private TextView tNameLevel;
     private TextView tScore;
     private TextView tLevel;
+    private TextView lblWrong;
     private ListView lAudio;
     private Spinner sMode;
     private Button bPlay;
@@ -115,6 +116,12 @@ public class PronunciationActivity extends AppCompatActivity {
         this.bHome = findViewById(R.id.button_home);
         this.mainContainer = findViewById(R.id.main_container);
         this.viewKonfetti = findViewById(R.id.viewKonfetti);
+        this.lblWrong = findViewById(R.id.lblWrong);
+
+        //rebase the array list
+        if  (!RandomHelper.arl.isEmpty()) {
+            RandomHelper.rebaseListNumber();
+        }
 
         //listener if the user press the home button
         mHomeWatcher = new HomeWatcher(Context);
@@ -256,7 +263,8 @@ public class PronunciationActivity extends AppCompatActivity {
         //checking if the user finish all the stages
         isUserFinishAllStages();
 
-
+        int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.PronunciationUserLevel,"pronunciation");
+        lblWrong.setText(String.format("Wrong : %s", String.valueOf(noOfMistakes)));
 
     }
 
@@ -297,14 +305,22 @@ public class PronunciationActivity extends AppCompatActivity {
         if (User.getPronunciationUserLevel().equals("1") || User.getPronunciationUserLevel().equals("2")) {
             Message.show("You are in Beginner, you need to answer " + (int) Math.ceil(((this.AudioFiles.size() + 1) * .50) -  Score) + " questions" +
                     " " +
-                    "before you can jump to advance", Context);
+                    "before you can jump to advance \n\n" +
+                    "Remember: \n" +
+                    "If you reach 5 mistakes your score will automatically back to zero.", Context);
         } else if (User.getPronunciationUserLevel().equals("3") || User.getPronunciationUserLevel().equals("4")) {
             Message.show("You are in Advance, you need to answer " + (int) Math.ceil(((this.AudioFiles.size() + 1) * 0.9) - Score) + "" +
-                    " questions so you can jump to expert", Context);
+                    " questions so you can jump to expert \n" +
+                    "\n\n" +
+                    "Remember:\n" +
+                    "If you reach 5 mistakes your score will automatically back to zero.", Context);
         } else if (User.getPronunciationUserLevel().equals("5") && this.Score < this.AudioFiles.size()) {
             Message.show("You are in Expert,  you need to answer " + (int) Math.ceil(((this.AudioFiles.size())) - Score) + " questions" +
                     " " +
-                    "to finish this level", Context);
+                    "to finish this level" +
+                    "\n\n" +
+                    "Remember:\n" +
+                    "If you reach 5 mistakes your score will automatically back to zero.", Context);
         }
     }
 
@@ -491,23 +507,38 @@ public class PronunciationActivity extends AppCompatActivity {
             this.setScore();
         }  else {
             msg = "Sorry, that is incorrect. The correct answer is " + answer + ".";
-            this.WrongAnswers++;
-            //music for wrong answer
-            SFXHelper.playMusic(getApplicationContext(),R.raw.wrong);
 
-            //TODO uncomment this after development mode
             //add mistake to user
-            //GameOverHelper.addMistake(this,User.Username,User.getPronunciationUserLevel());
+            GameOverHelper.addMistake(this,User.Username,User.getPronunciationUserLevel(),"pronunciation");
+
+            if (!GameOverHelper.isUserGameOver(this,User.Username,User.getPronunciationUserLevel(),"pronunciation")) {
+                SFXHelper.playMusic(getApplicationContext(),R.raw.wrong);
+            }
+
+
         }
 
         //checking if the user is game over or not
-        if (GameOverHelper.isUserGameOver(this,User.Username,User.getPronunciationUserLevel())) {
-            int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.getPronunciationUserLevel());
-            Toast.makeText(this, "Game over no. of mistake : " + String.valueOf(noOfMistakes), Toast.LENGTH_SHORT).show();
-            //rebase the mistakes count of the user
-            GameOverHelper.rebaseUserMistakes(this);
+        if (GameOverHelper.isUserGameOver(this,User.Username,User.getPronunciationUserLevel(),"pronunciation")) {
+            SFXHelper.playMusic(getApplicationContext(),R.raw.game_over);
+            Message.show("GAME OVER",this);
+
+            //rebase the no of mistakes in UI
+            GameOverHelper.rebaseUserMistakesInLevel(this,User.Username,User.getPronunciationUserLevel(),"pronunciation");
+
             //rebase the current score of the user in shared pref
-            UserScoreHelper.rebaseUserScore(this);
+            UserScoreHelper.setCurrentScoreInPronunciation(this,UserScoreHelper.getLevel(),User.Username,0);
+
+
+
+
+            //rebasing and set to 0
+            this.setUserMistakes();
+
+        } else { //if not game over display user mistakes
+            //display the wrong answer of the user in UI
+            this.setUserMistakes();
+            //music for wrong
         }
 
 
@@ -561,6 +592,11 @@ public class PronunciationActivity extends AppCompatActivity {
 
         // Show another question.
         this.showQuestion();
+    }
+
+    private void setUserMistakes() {
+        int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.getPronunciationUserLevel(),"pronunciation");
+        lblWrong.setText(String.format("Wrong : %s", String.valueOf(noOfMistakes)));
     }
 
     private void generateConfetti() {

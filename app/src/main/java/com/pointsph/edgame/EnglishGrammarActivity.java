@@ -1,6 +1,5 @@
 package com.pointsph.edgame;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +21,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
@@ -32,7 +30,6 @@ import com.pointsph.edgame.Helpers.RandomHelper;
 import com.pointsph.edgame.Helpers.SFXHelper;
 import com.pointsph.edgame.Helpers.UserLevelHelper;
 import com.pointsph.edgame.Helpers.UserScoreHelper;
-import com.pointsph.edgame.Helpers.UserStatusHelper;
 import com.pointsph.edgame.Services.BackgroundMusic;
 import com.pointsph.edgame.SharedPref.SharedPreferenceHelper;
 import com.pointsph.edgame.Watcher.HomeWatcher;
@@ -70,6 +67,7 @@ public class EnglishGrammarActivity extends AppCompatActivity {
     private TextView tScore;
     private Spinner sMode;
     private TextView tQuestion;
+    private TextView lblWrong;
     private TextView correctAnswers;
     private TextView wrongAnswers;
     private TextView tLevel;
@@ -198,6 +196,12 @@ public class EnglishGrammarActivity extends AppCompatActivity {
         this.soundStatus = findViewById(R.id.soundStatus);
         this.mainContainer = findViewById(R.id.main_container);
         this.viewKonfetti = findViewById(R.id.viewKonfetti);
+        this.lblWrong = findViewById(R.id.lblWrong);
+
+        //rebase the array list
+        if  (!RandomHelper.arl.isEmpty()) {
+            RandomHelper.rebaseListNumber();
+        }
 
         //listener if the user press the home button
         mHomeWatcher = new HomeWatcher(Context);
@@ -375,7 +379,13 @@ public class EnglishGrammarActivity extends AppCompatActivity {
         //checking if the user finish all the stages
         this.isUserFinishAllStages();
 
+        //initialize and set user mistakes
+        this.setUserMistakes();
+    }
 
+    private void setUserMistakes() {
+        int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.getGrammarUserLevel(),"grammar");
+        lblWrong.setText(String.format("Wrong : %s", String.valueOf(noOfMistakes)));
     }
 
     /**
@@ -405,14 +415,24 @@ public class EnglishGrammarActivity extends AppCompatActivity {
         if (User.getGrammarUserLevel().equals("1") || User.getGrammarUserLevel().equals("2")) {
             Message.show("You are in Beginner, you need to answer " + (int) Math.ceil(((Questions.size() + 1) * .50) - Score) + " questions" +
                     " " +
-                    "before you can jump to advance", Context);
+                    "before you can jump to advance \n" +
+                    "\n\n"+
+                    "Remember: \n" +
+                    "If you reached 5 mistakes your score will automatically back to zero.", Context);
         } else if (User.GrammarUserLevel.equals("3") || User.GrammarUserLevel.equals("4")) {
             Message.show("You are in Advance, you need to answer " + (int) Math.ceil(((Questions.size() + 1) * 0.9) - Score) + "" +
-                    " questions so you can jump to expert", Context);
+                    " questions so you can jump to expert" +
+                    "\n\n" +
+                    "Remember: \n" +
+                            "If you reach 5 mistakes your score will automatically back to zero"
+                    , Context);
         } else if (User.GrammarUserLevel.equals("5") && this.Score < Questions.size()) {
             Message.show("You are in Expert,  you need to answer " + (int) Math.ceil(((this.Questions.size())) - Score)+ " questions" +
                     " " +
-                    "to finish this level", Context);
+                    "to finish this level" +
+                    "\n\n" +
+                    "Remember: \n" +
+                    "If you reach 5 mistakes your score will automatically back to zero", Context);
         }
 
     }
@@ -544,24 +564,36 @@ public class EnglishGrammarActivity extends AppCompatActivity {
 
         }  else {
             msg = "Sorry, that is incorrect. The correct answer is " + answer + ".";
-            //music for wrong
-            SFXHelper.playMusic(getApplicationContext(),R.raw.wrong);
-
-            //TODO uncomment this after development mode
             //add mistake to user
-            //GameOverHelper.addMistake(this,User.Username,User.getGrammarUserLevel());
+            GameOverHelper.addMistake(this,User.Username,User.getGrammarUserLevel(),"grammar");
+
+            if (!GameOverHelper.isUserGameOver(this,User.Username,User.getGrammarUserLevel(),"grammar")) {
+                SFXHelper.playMusic(getApplicationContext(),R.raw.wrong);
+            }
 
         }
 
         //checking if the user is game over or not
-        if (GameOverHelper.isUserGameOver(this,User.Username,User.getGrammarUserLevel())) {
-            int noOfMistakes = GameOverHelper.getUserMistake(this,User.Username,User.getGrammarUserLevel());
-            Toast.makeText(this, "Game over no. of mistake : " + String.valueOf(noOfMistakes), Toast.LENGTH_SHORT).show();
-            //rebase the mistakes count of the user
-            GameOverHelper.rebaseUserMistakes(this);
+        if (GameOverHelper.isUserGameOver(this,User.Username,User.getGrammarUserLevel(),"grammar")) {
+            SFXHelper.playMusic(getApplicationContext(),R.raw.game_over);
+            Message.show("GAME OVER",this);
+
+            //rebase the no of mistakes in UI
+            GameOverHelper.rebaseUserMistakesInLevel(this,User.Username,User.getGrammarUserLevel(),"grammar");
+
             //rebase the current score of the user in shared pref
-            UserScoreHelper.rebaseUserScore(this);
+            UserScoreHelper.setCurrentScoreInGrammar(Context,UserScoreHelper.getLevel(),User.Username,0);
+
+            //rebasing and set to 0
+            this.setUserMistakes();
+
+        } else { //if not game over display user mistakes
+            //display the wrong answer of the user in UI
+            this.setUserMistakes();
+            //music for wrong
         }
+
+
 
         // Determine level up.
         if (this.isLevelUp()) {

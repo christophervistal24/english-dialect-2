@@ -8,7 +8,7 @@ import java.util.Random;
 
 public class RandomHelper {
 
-    private static ArrayList<Integer> arl = new ArrayList<Integer>();
+    public static ArrayList<Integer> arl = new ArrayList<Integer>();
 
     public static void randomize(int n)
     {
