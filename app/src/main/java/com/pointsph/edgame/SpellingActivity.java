@@ -176,6 +176,8 @@ public class SpellingActivity extends AppCompatActivity {
                         //set UserScoreHelper level to = what the user choose
                         //set UserScoreHelper level to = what the user choose
                         UserScoreHelper.setLevel(UserScoreHelper.convertWordToLevel(level));
+                        //rebase the no of mistakes in UI
+                        GameOverHelper.rebaseUserMistakesInLevel(Context,User.Username,UserScoreHelper.getLevel(),"spelling");
                         //rebase the user score on that particular level
                         UserScoreHelper.setCurrentScoreInSpelling(Context,UserScoreHelper.getLevel(),User.Username,0);
                         setScore();
@@ -207,6 +209,8 @@ public class SpellingActivity extends AppCompatActivity {
                         //set UserScoreHelper level to = what the user choose
                         //set UserScoreHelper level to = what the user choose
                         UserScoreHelper.setLevel(UserScoreHelper.convertWordToLevel(level));
+                        //rebase the no of mistakes in UI
+                        GameOverHelper.rebaseUserMistakesInLevel(Context,User.Username,UserScoreHelper.getLevel(),"spelling");
                         //rebase the user score on that particular level
                         UserScoreHelper.setCurrentScoreInSpelling(Context,UserScoreHelper.getLevel(),User.Username,0);
                         setScore();
@@ -272,6 +276,8 @@ public class SpellingActivity extends AppCompatActivity {
                 if  (!itIsEqualToCurrentLevel && isBackward) {
                     //set UserScoreHelper level to = what the user choose
                     UserScoreHelper.setLevel(UserScoreHelper.convertWordToLevel(level));
+                    //rebase the no of mistakes in UI
+                    GameOverHelper.rebaseUserMistakesInLevel(Context,User.Username,UserScoreHelper.getLevel(),"spelling");
                     //rebase the user score on that particular level
                     UserScoreHelper.setCurrentScoreInSpelling(Context,UserScoreHelper.getLevel(),User.Username,0);
                     setScore();
@@ -283,6 +289,7 @@ public class SpellingActivity extends AppCompatActivity {
                     initSpellings();
                     showSpelling();
                 }
+                setUserMistakes();
 
 
             }
@@ -352,12 +359,16 @@ public class SpellingActivity extends AppCompatActivity {
     //display information according to user level
     private void giveMessageDependingOnLevel(boolean isLevelFinish) {
         String msg = null;
+        String title = null;
+        String icon = null;
         //get the spellings to easily calculate the no of questions that the user need to answer
         initSpellings();
         showSpelling();
         this.setScore(); //update the user score
         //check level of the user and give appropriate message
         if (User.getSpellingUserLevel().equals("1") || User.getSpellingUserLevel().equals("2")) {
+            title = "I N F O R M A T I O N";
+            icon = "ic_chat_black_24dp";
             msg = "You are in Beginner, you need to answer " + (int) Math.ceil(((this.Spellings.size() + 1) * .50) - Score) + " questions" +
                     " " +
                     "before you can jump to advance \n" +
@@ -366,12 +377,16 @@ public class SpellingActivity extends AppCompatActivity {
                     "If you reach 5 mistakes your score will automatically back to zero.";
         } else if (User.getSpellingUserLevel().equals("3") || User.getSpellingUserLevel().equals("4")) {
             if (isLevelFinish) {
+                title = "L E V E L U P";
+                icon = "ic_star_black_24dp";
                 msg = "Very good that is correct , now you are in Advance, you need to answer " + (int) Math.ceil(((this.Spellings.size() + 1) * 0.9) - Score) + " questions" +
                         " so you can jump to expert \n" +
                         " \n\n" +
                         "Remember: \n" +
                         "If you reach 5 mistakes your score will automatically back to zero.";
             } else {
+                title = "I N F O R M A T I O N";
+                icon = "ic_chat_black_24dp";
                 msg = "You are in Advance, you need to answer " + (int) Math.ceil(((this.Spellings.size() + 1) * 0.9) - Score) + " questions" +
                         " so you can jump to expert \n" +
                         " \n\n" +
@@ -380,6 +395,8 @@ public class SpellingActivity extends AppCompatActivity {
             }
         } else if (User.getSpellingUserLevel().equals("5") && this.Score < this.Spellings.size()) {
             if (isLevelFinish) {
+                title = "L E V E L U P";
+                icon = "ic_star_black_24dp";
                 msg = "Very good, that is correct! now you are Expert,  you need to answer " + (int) Math.ceil((this.Spellings.size()) - Score) + " questions" +
                         " " +
                         "to finish this level" +
@@ -387,6 +404,8 @@ public class SpellingActivity extends AppCompatActivity {
                         "Remember: \n" +
                         "If you reach 5 mistakes your score will automatically back to zero.";
             } else {
+                title = "I N F O R M A T I O N";
+                icon = "ic_chat_black_24dp";
                 msg = "You are in Expert,  you need to answer " + (int) Math.ceil((this.Spellings.size()) - Score) + " questions" +
                         " " +
                         "to finish this level" +
@@ -397,8 +416,9 @@ public class SpellingActivity extends AppCompatActivity {
         }
 
         if (!isFinish) {
+            int msgIcon = getResources().getIdentifier(icon,"drawable", Objects.requireNonNull(this).getPackageName());
             new FancyAlertDialog.Builder(this)
-                    .setTitle("I N F O R M A T I O N")
+                    .setTitle(title)
                     .setBackgroundColor(Color.parseColor("#303F9F"))
                     .setMessage(msg)
                     .setNegativeBtnText("")
@@ -407,7 +427,7 @@ public class SpellingActivity extends AppCompatActivity {
                     .setPositiveBtnText("OK")
                     .setAnimation(Animation.POP)
                     .isCancellable(false)
-                    .setIcon(R.drawable.ic_chat_black_24dp, Icon.Visible)
+                    .setIcon(msgIcon, Icon.Visible)
                     .build();
         }
     }
@@ -447,7 +467,7 @@ public class SpellingActivity extends AppCompatActivity {
                 this.Score = 0;
             }
 //          this.tScore.setText(String.format("Score: %s / %s", this.Score.toString(), this.QuestionsCount.toString()));
-        this.tScore.setText(String.format("Score: %s", this.Score.toString()));
+        this.tScore.setText(String.format("Correct: %s", this.Score.toString()));
     }
 
     // Gets a list of spelling files from the storage.
@@ -562,7 +582,7 @@ public class SpellingActivity extends AppCompatActivity {
             SFXHelper.playMusic(getApplicationContext(),R.raw.game_over);
             isUserGameOver = true;
             new FancyAlertDialog.Builder(this)
-                    .setTitle("Game Over")
+                    .setTitle("G A M E O V E R")
                     .setBackgroundColor(Color.parseColor("#303F9F"))
                     .setMessage("Sorry , you reach 5 mistakes \n" +
                             "The correct answer is " + correctAnswer)
@@ -639,7 +659,7 @@ public class SpellingActivity extends AppCompatActivity {
         if (!isUserGameOver) {
             if  (!isFinishLevel) {
                 int msgIcon = getResources().getIdentifier(resultTypeImage,"drawable", Objects.requireNonNull(this).getPackageName());
-                String title = (resultTypeImage.contains("check")) ? "C o r r e c t" : "W r o n g".toUpperCase();
+                String title = (resultTypeImage.contains("check")) ? "C o r r e c t".toUpperCase() : "W r o n g".toUpperCase();
                 new FancyAlertDialog.Builder(this)
                         .setTitle(title)
                         .setBackgroundColor(Color.parseColor("#303F9F"))
@@ -918,7 +938,7 @@ public class SpellingActivity extends AppCompatActivity {
 
         int currentUserLevel = UserLevelHelper
                 .currentLevelOfUser(Integer.parseInt(this.User.getSpellingUserLevel()));
-        tLevel.setText(String.format(Locale.getDefault(),"Level : %d",currentUserLevel));
+        tLevel.setText(String.format(Locale.getDefault(),"LEVEL : %d",currentUserLevel));
     }
 
     private boolean checkIsUserDoneAllStage(int currentScore , int currentLevel , int noOfQuestions) {

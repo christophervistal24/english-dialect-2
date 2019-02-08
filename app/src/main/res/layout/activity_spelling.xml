@@ -101,7 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight=".50"
                     android:freezesText="true"
-                    android:text="Score: 0"
+                    android:text="Correct: 0"
                     android:textAlignment="textStart"
                     android:textColor="#2196F3"
                     android:textStyle="bold"
@@ -140,9 +140,10 @@
             android:text="Level : "
             android:layout_weight=".50"
             android:freezesText="true"
-            android:textColor="#2C3D3C"
+            android:textColor="#E91E63"
             android:textStyle="bold"
-            android:textSize="19sp"
+            android:textSize="21sp"
+            android:textAllCaps="true"
             android:layout_gravity="center_horizontal"
            />
 

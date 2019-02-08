@@ -248,7 +248,7 @@ public class MainActivity extends AppCompatActivity {
                 UserInstructionHelper.setSpellingInstructMessageDone(getApplicationContext(),User.Username);
 
                 //display the instruction and redirect the user after hitting the ok button
-                displayInstructorForUserAndRedirect("Tap the play button to hear the word given " +
+                displayInstructorForUserAndRedirect("Press the icon to hear the word given " +
                         "audio , then " +
                         "type the correct spelling of the word " +
                         "\n" +
@@ -271,7 +271,7 @@ public class MainActivity extends AppCompatActivity {
                 UserInstructionHelper.setPronunciationInstructMessageDone(getApplicationContext(),User.Username);
 
                 //display the instruction and redirect the user after hitting the ok button
-                displayInstructorForUserAndRedirect("Tap the play button to hear " +
+                displayInstructorForUserAndRedirect("Press the icon to hear " +
                         "the word given in audio, then choose the corresponding " +
                         "spelling of it's correct answer " +
                         "\n" +

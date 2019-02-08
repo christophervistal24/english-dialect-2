@@ -16,6 +16,7 @@ import android.util.ArrayMap;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 
@@ -40,6 +41,7 @@ public class WelcomeActivity extends AppCompatActivity {
     private User User;
     private String Username = "";
     private boolean isLogin = false;
+    private RelativeLayout welcomeLayout;
 
 
 
