@@ -1,2 +1,2 @@
-# english-dialect-2
+# English-Dialect
 Special Project
