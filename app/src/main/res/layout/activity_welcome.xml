@@ -18,6 +18,7 @@
 
 
     <LinearLayout
+        android:onClick="proceed"
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -43,6 +44,7 @@
         android:layout_centerInParent="true">
 
         <TextView
+            android:onClick="proceed"
             android:layout_marginBottom="90dp"
             android:id="@+id/textTitle"
             android:layout_width="match_parent"
@@ -58,6 +60,7 @@
 
 
     <Button
+        android:onClick="proceed"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/title"

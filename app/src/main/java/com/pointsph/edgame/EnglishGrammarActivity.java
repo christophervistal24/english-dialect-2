@@ -315,7 +315,7 @@ public class EnglishGrammarActivity extends AppCompatActivity {
                         messageDialog
                                 .setTitle("I N F O R M A T I O N")
                                 .setBackgroundColor(Color.parseColor("#303F9F"))
-                                .setMessage("Level not yet reached. you need to answer " + (int) Math.ceil(((QuestionsCount+1) * .50) - Score) + " questions" +
+                                .setMessage("Level not yet reached. you need to get " + (int) Math.ceil(((QuestionsCount+1) * .50) - Score) + " correct answer" +
                                         " " +
                                         "before you can jump to advance")
                                 .setNegativeBtnText("")
@@ -353,8 +353,8 @@ public class EnglishGrammarActivity extends AppCompatActivity {
                         messageDialog
                                 .setTitle("I N F O R M A T I O N")
                                 .setBackgroundColor(Color.parseColor("#303F9F"))
-                                .setMessage("Level not yet reached. you need to answer " + (int) Math.ceil(((QuestionsCount+1) * .50) - Score)  + "" +
-                                        " questions to proceed in advance then answer " + (int) Math.ceil((QuestionsCount+1) * 0.9) + " questions" +
+                                .setMessage("Level not yet reached. you need to get " + (int) Math.ceil(((QuestionsCount+1) * .50) - Score)  + "" +
+                                        " correct answer to proceed in advance then you also need to get " + (int) Math.ceil((QuestionsCount+1) * 0.9) + " correct answer" +
                                         " so you can jump to expert")
                                 .setNegativeBtnText("")
                                 .setNegativeBtnBackground(Color.parseColor("#00141312"))  //Don't pass R.color.colorvalue
@@ -371,7 +371,7 @@ public class EnglishGrammarActivity extends AppCompatActivity {
                         messageDialog
                                 .setTitle("I N F O R M A T I O N")
                                 .setBackgroundColor(Color.parseColor("#303F9F"))
-                                .setMessage("Level not yet reached. you need to answer " + (int) Math.ceil(((QuestionsCount+1) * 0.9) - Score) + " questions" +
+                                .setMessage("Level not yet reached. you need to get " + (int) Math.ceil(((QuestionsCount+1) * 0.9) - Score) + " correct answer" +
                                         " " +
                                         "before you can jump to expert")
                                 .setNegativeBtnText("")
@@ -484,7 +484,7 @@ public class EnglishGrammarActivity extends AppCompatActivity {
         if (User.getGrammarUserLevel().equals("1") || User.getGrammarUserLevel().equals("2")) {
             title = "I N F O R M A T I O N";
             icon = "ic_chat_black_24dp";
-            msg ="You are in Beginner, you need to answer " + (int) Math.ceil(((Questions.size() + 1) * .50) - Score) + " questions" +
+            msg ="You are in Beginner, you need to get " + (int) Math.ceil(((Questions.size() + 1) * .50) - Score) + " correctanswer" +
                     " " +
                     "before you can jump to advance \n" +
                     "\n\n"+
@@ -494,8 +494,8 @@ public class EnglishGrammarActivity extends AppCompatActivity {
             if  (isLevelFinish) {
                 title = "L E V E L U P";
                 icon = "ic_star_black_24dp";
-                msg ="Very good that is correct! , now you are in Advance, you need to answer " + (int) Math.ceil(((Questions.size() + 1) * 0.9) - Score) + "" +
-                                " questions so you can jump to expert" +
+                msg ="Very good that is correct! , now you are in Advance, you need to get " + (int) Math.ceil(((Questions.size() + 1) * 0.9) - Score) + "" +
+                                " correct answer so you can jump to expert" +
                                 "\n\n" +
                                 "Remember: \n" +
                                 "If you reach 5 mistakes your score will automatically back to zero";
@@ -503,8 +503,8 @@ public class EnglishGrammarActivity extends AppCompatActivity {
                 title = "I N F O R M A T I O N";
                 icon = "ic_chat_black_24dp";
                 msg =
-                        "You are in Advance, you need to answer " + (int) Math.ceil(((Questions.size() + 1) * 0.9) - Score) + "" +
-                                " questions so you can jump to expert" +
+                        "You are in Advance, you need to get " + (int) Math.ceil(((Questions.size() + 1) * 0.9) - Score) + "" +
+                                " correct answer so you can jump to expert" +
                                 "\n\n" +
                                 "Remember: \n" +
                                 "If you reach 5 mistakes your score will automatically back to zero";
@@ -515,7 +515,7 @@ public class EnglishGrammarActivity extends AppCompatActivity {
             if (isLevelFinish) {
                 title = "L E V E L U P";
                 icon = "ic_star_black_24dp";
-                msg = "Very good, that is correct ! now you are in Expert,  you need to answer " + (int) Math.ceil(((this.Questions.size())) - Score)+ " questions" +
+                msg = "Very good, that is correct ! now you are in Expert,  you need to get " + (int) Math.ceil(((this.Questions.size())) - Score)+ " correct answer" +
                         " " +
                         "to finish this level" +
                         "\n\n" +
@@ -524,7 +524,7 @@ public class EnglishGrammarActivity extends AppCompatActivity {
             } else {
                 title = "I N F O R M A T I O N";
                 icon = "ic_chat_black_24dp";
-                msg = "You are in Expert,  you need to answer " + (int) Math.ceil(((this.Questions.size())) - Score)+ " questions" +
+                msg = "You are in Expert,  you need to get " + (int) Math.ceil(((this.Questions.size())) - Score)+ " correct answer" +
                         " " +
                         "to finish this level" +
                         "\n\n" +
@@ -697,7 +697,7 @@ public class EnglishGrammarActivity extends AppCompatActivity {
             new FancyAlertDialog.Builder(this)
                     .setTitle("G A M E O V E R")
                     .setBackgroundColor(Color.parseColor("#303F9F"))
-                    .setMessage("Sorry , you reach 5 mistakes \n" +
+                    .setMessage("Sorry, you have reached 5 mistakes \n" +
                             "The correct answer is " + answer)
                     .setNegativeBtnText("OTHER CATEGORY")
                     .setPositiveBtnBackground(Color.parseColor("#FF4081"))  //Don't pass R.color.colorvalue
